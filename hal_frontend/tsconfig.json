@@ -9,6 +9,8 @@
   "paths": {
     "@/*": ["./src/*"]
   },
-  "include": ["types.d.ts"]
+  "include": [
+    "src/types.d.ts"
+  ]
 }
 }

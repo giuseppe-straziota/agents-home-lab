@@ -1,4 +1,4 @@
-import {ChevronUp, Home, LucideIcon, User2} from "lucide-react"
+import {ChevronUp, User2} from "lucide-react"
 
 import {
     Sidebar,
@@ -12,43 +12,24 @@ import {
     SidebarMenuItem, SidebarMenuSub,
     SidebarMenuSubItem,
 } from "@/components/ui/sidebar"
-import {DropdownMenu, DropdownMenuContent, DropdownMenuItem, DropdownMenuTrigger} from "@radix-ui/react-dropdown-menu";
+import { DropdownMenu, DropdownMenuContent, DropdownMenuItem, DropdownMenuTrigger} from "@radix-ui/react-dropdown-menu";
 import { useEffect, useState} from "react";
-
- interface Agent  {
-    title:string,
-        url: string,
-        icon:  LucideIcon
-}
+import { useSelector } from "react-redux";
+import { RootState } from 'MyTypes';
+import { AgentsModel } from "AgentModel";
+import {Agent} from "@/components/agentCanvas/data/types";
 
 export function LeftSidebar() {
 
-    const [agents, setAgents] = useState([]);
+    const [agents, setAgents] = useState<AgentsModel>([]);
+    const listOfAgents = useSelector<AgentsModel>( (state: RootState) => state.agents.list)
 
     useEffect(() => {
-        fetch('/api/agent', {
-            method: "GET",
-            headers: {
-                "Content-Type": "application/json",
-            },
-        })
-            .then((res) => {
-                return res.json();
-            })
-            .then((data) => {
-                console.log(data);
-                setAgents(data.map((agent: { name: string; })=> {
-                        return {
-                            title: agent.name,
-                            url:"#",
-                            icon:Home,
-                        }
-                },));
-            });
-    }, []);
+            setAgents(listOfAgents as AgentsModel || [])
+    }, [listOfAgents]);
 
     return (
-        <Sidebar side={'left'} >
+        <Sidebar side={'left'}>
             <SidebarHeader>
                 <div>Home Agents Lab</div>
             </SidebarHeader>
@@ -71,7 +52,6 @@ export function LeftSidebar() {
                                         </SidebarMenuSub>
                                         ))}
                                     </SidebarMenuItem>
-
                         </SidebarMenu>
                     </SidebarGroupContent>
                 </SidebarGroup>

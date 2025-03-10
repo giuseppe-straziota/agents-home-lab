@@ -9,4 +9,9 @@ const pool = new Pool({
         port: Number(process.env.DB_PORT),
     })
 
+pool.on("connect", (conn) => {
+        // @ts-expect-error iii909
+        console.log('database connected', (conn as unknown).connectionParameters)
+})
+
 export default pool;

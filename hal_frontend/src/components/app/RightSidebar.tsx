@@ -24,7 +24,7 @@ const items = [
 
 export function RightSidebar() {
     return (
-        <Sidebar side={'right'} >
+        <Sidebar side={'right'} variant={"inset"}>
             <SidebarHeader>
                 <div>Properties</div>
             </SidebarHeader>

@@ -1,4 +1,4 @@
-import {SidebarProvider, SidebarTrigger} from "@/components/ui/sidebar"
+import {SidebarProvider} from "@/components/ui/sidebar"
 import {LeftSidebar} from "@/components/app/LeftSidebar.tsx";
 import {RightSidebar} from "@/components/app/RightSidebar.tsx";
 
@@ -13,7 +13,6 @@ export default function Layout({ children }: { children: React.ReactNode}) {
                         {children}
             </SidebarProvider>
             <SidebarProvider>
-                <LeftSidebar />
                 <RightSidebar />
             </SidebarProvider>
         </>

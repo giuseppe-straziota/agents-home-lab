@@ -1,11 +1,21 @@
 import pool from "@/app/database/db";
+import {getWSServer} from "@/server/websocket.js";
+import {WebSocket} from "ws";
 
 
-export async function GET(request: Request) {
-    console.log(request);
+export async function GET() {
     try {
         const result = await pool.query('SELECT * FROM configuration')
-        console.log(result)
+        console.log("configuration list call")
+
+        const ws = getWSServer()
+        if (ws){
+              getWSServer().clients.forEach((client:WebSocket) => {
+                if (client.readyState === client.OPEN) {
+                    client.send('Messaggio inviato dall\'API route! '+ result.rows.toString());
+                }
+            });
+        }
         return new Response(JSON.stringify(result.rows), {
             status: 200,
             headers: { 'Content-Type': 'application/json' }

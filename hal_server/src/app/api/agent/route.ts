@@ -1,11 +1,11 @@
 import pool from "@/app/database/db";
 
 
-export async function GET(request: Request) {
-    console.log(request);
+
+export async function GET() {
     try {
         const result = await pool.query('SELECT * FROM agent')
-        console.log(result)
+        console.log("agent list call")
         return new Response(JSON.stringify(result.rows), {
             status: 200,
             headers: { 'Content-Type': 'application/json' }
