@@ -1,20 +1,22 @@
-import {SidebarProvider} from "@/components/ui/sidebar"
-import {LeftSidebar} from "@/components/app/LeftSidebar.tsx";
-import {RightSidebar} from "@/components/app/RightSidebar.tsx";
+import {useEffect} from "react";
+import {useDispatch} from "react-redux";
+import {loadAgentAsync} from "@/components/agentCanvas/data/agents_actions.ts";
+import {loadSettingsAsync} from "@/data/actions.ts";
+
 
 export default function Layout({ children }: { children: React.ReactNode}) {
+
+    const dispatch = useDispatch();
+    useEffect(() => {
+        dispatch(loadAgentAsync.request());
+        dispatch(loadSettingsAsync.request());
+    }, []);
+
     return (
         <>
-            <SidebarProvider style={{
-            }}>
-                <LeftSidebar />
-                        {/*<SidebarTrigger />*/}
-
-                        {children}
-            </SidebarProvider>
-            <SidebarProvider>
-                <RightSidebar />
-            </SidebarProvider>
+            <div className="flex h-dvh overflow-auto ">
+                {children}
+            </div>
         </>
     )
 }

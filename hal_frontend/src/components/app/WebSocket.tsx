@@ -1,45 +1,42 @@
 
 import {useEffect} from "react";
-import {loadAgentAsync} from "@/components/agentCanvas/data/agents_actions.ts";
-import {useDispatch} from "react-redux";
-import {loadSettingsAsync} from "@/data/actions.ts";
 
 const WebSocketCmp = ({ children }: { children: React.ReactNode}) =>{
 
-    const dispatch = useDispatch();
+    const socket = new WebSocket('ws://localhost:3006/ws');
 
+    function sendMessage(message:  string | ArrayBufferLike | Blob | ArrayBufferView) {
+        console.log('sendMessage', message)
+        socket.send(message);
+    }
 
     useEffect(() => {
-        dispatch(loadAgentAsync.request());
-        dispatch(loadSettingsAsync.request());
-
-        const socket = new WebSocket('ws://localhost:3006/ws');
 
         socket.onopen = function(event) {
             // Handle connection open
-            console.log('onopen');
+            console.log('onopen', event);
             sendMessage(JSON.stringify({test: Date.now()}))
         };
 
         socket.onmessage = function(event) {
             // Handle received message
-            console.log('onmessage')
+            console.log('onmessage', event)
         };
 
         socket.onclose = function(event) {
             // Handle connection close
-            console.log('onclose')
+            console.log('onclose', event)
         };
 
-        function sendMessage(message: any) {
-            console.log('sendMessage', message)
-            socket.send(message);
+        return ()=>{
+            console.log('closed')
         }
     },[]);
 
     return (
-        <> {children}
-        </>
+        <div>
+            {children}
+        </div>
     )
 }
 

@@ -1,14 +1,14 @@
 import { createServer } from 'http';
 import { parse } from 'url';
 import next from 'next';
-import { createClient } from 'redis';
-import {initWebSocket, setWSServer} from "./websocket.js";
+import {GlobalWS} from "../lib/websocket.js";
+import redisClient from "../lib/redis.js";
 const dev = process.env.NODE_ENV !== 'production';
 const app = next({ dev });
 const handle = app.getRequestHandler();
 
 app.prepare().then(async () => {
-    // Creiamo un server HTTP
+
     const server = createServer((req, res) => {
         const parsedUrl = parse(req.url, true);
         handle(req, res, parsedUrl);
@@ -17,28 +17,33 @@ app.prepare().then(async () => {
 
     const port =  process.env.SERVER_PORT;
     server.listen(port, () => {
-        console.log(`> Pronto su http://${process.env.SERVER_HOST}:${process.env.SERVER_PORT}`);
+        console.log(`> Ready on http://${process.env.SERVER_HOST}:${process.env.SERVER_PORT}`);
     });
 
-    setWSServer(initWebSocket())
+    const wsServer = new GlobalWS();
+    console.log('wsserver ', wsServer)
 
     redisConnect();
-
-
 });
 
 
 export function redisConnect(){
-    const clientRedis = createClient({url: `redis://${process.env.REDIS_HOST}:${process.env.REDIS_PORT}`});
 
-    clientRedis
-        .on('error', err => console.log('Redis Client Error', err))
-        .connect();
+    redisClient
+        .on('error', err => console.log('Redis Client Error', err));
 
-    clientRedis.set('test','2222').then((data)=>{
+     if (!redisClient.isOpen){
+         redisClient
+             .connect().then(c=>{
+             console.log('connected to redis client...',c)
+         });
+     }
+
+    redisClient.set('test2', Date.now().toString()).then((data)=>{
         console.log('Redis Client Connected', data);
-        const value = clientRedis.get('test');
-        console.log('value',value)
+        //const value = redisClient.get('test');
+        //console.log('value',value)
         //clientRedis.disconnect();
     });
+
 }

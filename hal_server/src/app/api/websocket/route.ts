@@ -1,10 +1,10 @@
-import pool from "@/app/database/db";
+import {GlobalWS} from "@/lib/websocket";
+
 
 export async function GET() {
     try {
-        const result = await pool.query('SELECT * FROM agent')
-        console.log("agent list call")
-        return new Response(JSON.stringify(result.rows), {
+        console.log("wsServer call", new GlobalWS()  )
+        return new Response(JSON.stringify({exist: true}), {
             status: 200,
             headers: { 'Content-Type': 'application/json' }
         });

@@ -6,11 +6,11 @@ import { isActionOf} from 'typesafe-actions';
 import {
     loadAgentAsync
 } from './agents_actions.ts';
-import {Home} from "lucide-react";
-import {AgentsModel} from "AgentModel";
-import { RootEpic } from 'MyTypes';
+import {Bot} from "lucide-react";
+import {AgentsModel} from "typesafe-actions";
+import { RootEpic } from 'typesafe-actions';
 
-function loadAgent(): Promise<AgentsModel[]>  {
+function loadAgent(): Promise<AgentsModel>  {
     return new Promise((resolve) => {
         fetch('/api/agent', {
             method: "GET",
@@ -22,19 +22,19 @@ function loadAgent(): Promise<AgentsModel[]>  {
                 return res.json();
             })
             .then((data) => {
-                console.log('data from api agent');
+                console.log('data from api agent', data);
                 resolve(data.map((agent: { name: string; }) => {
                     return {
                         title: agent.name,
                         url: "#",
-                        icon: Home,
+                        icon: Bot,
                     }
-                }) as AgentsModel[])
+                }) as AgentsModel)
             });
     })
 }
 
-export const loadArticlesEpic: RootEpic = (action$, state$,) =>
+export const loadArticlesEpic: RootEpic = (action$) =>
     action$.pipe(
         filter(isActionOf(loadAgentAsync.request)),
         switchMap(() =>

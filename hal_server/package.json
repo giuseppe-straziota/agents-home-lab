@@ -1,5 +1,5 @@
 {
-  "name": "hal_server",
+  "name": "agents-home-lab-server",
   "version": "0.1.0",
   "private": true,
   "type": "module",
@@ -19,7 +19,8 @@
     "react-dom": "^19.0.0",
     "redis": "^4.7.0",
     "tailwind-merge": "^3.0.2",
-    "tailwindcss-animate": "^1.0.7"
+    "tailwindcss-animate": "^1.0.7",
+    "ts-node": "^10.9.2"
   },
   "devDependencies": {
     "@eslint/eslintrc": "^3",

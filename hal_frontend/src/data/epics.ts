@@ -6,8 +6,8 @@ import { isActionOf} from 'typesafe-actions';
 import {
     loadSettingsAsync
 } from './actions';
-import {SettingsModel} from "SettingsModel";
-import { RootEpic } from 'MyTypes';
+import {SettingsModel} from "typesafe-actions";
+import { RootEpic } from 'typesafe-actions';
 
 function loadAgent(): Promise<SettingsModel[]>  {
     return new Promise((resolve) => {
@@ -28,7 +28,7 @@ function loadAgent(): Promise<SettingsModel[]>  {
     })
 }
 
-export const loadArticlesEpic: RootEpic = (action$, state$,) =>
+export const loadArticlesEpic: RootEpic = (action$) =>
     action$.pipe(
         filter(isActionOf(loadSettingsAsync.request)),
         switchMap(() =>

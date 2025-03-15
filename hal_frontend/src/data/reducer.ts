@@ -1,7 +1,7 @@
 
 import { combineReducers } from 'redux';
 import { createReducer } from 'typesafe-actions';
-import {SettingsModel} from 'SettingsModel'
+import {SettingsModel} from 'typesafe-actions'
 
 import {
     loadSettingsAsync

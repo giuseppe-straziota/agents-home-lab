@@ -1,5 +1,5 @@
 import { createAsyncAction } from 'typesafe-actions';
-import {SettingsModel} from "SettingsModel";
+import {SettingsModel} from "typesafe-actions";
 
 export const loadSettingsAsync = createAsyncAction(
     'LOAD_SETTINGS_REQUEST',
