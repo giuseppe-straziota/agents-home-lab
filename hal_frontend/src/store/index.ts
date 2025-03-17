@@ -1,4 +1,4 @@
-import {AgentsModel, RootAction, RootState} from 'typesafe-actions';
+import {AgentsModel, RootAction, RootState, SettingsModel, ToolsModel} from 'typesafe-actions';
 import { createStore, applyMiddleware } from 'redux';
 import { createEpicMiddleware } from 'redux-observable';
 
@@ -20,7 +20,7 @@ const enhancer = composeEnhancers(applyMiddleware(...middlewares));
 // rehydrate state on app start
 const initialState : RootState= {
     agents: {list: [] as AgentsModel },
-    settings: {list: [] }
+    settings: {list: [] as SettingsModel, tools: [] as ToolsModel }
 };
 
 // create store

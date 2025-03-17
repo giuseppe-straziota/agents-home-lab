@@ -1,7 +1,7 @@
 import {WebSocketServer} from 'ws'
-
+let wsServer;
 export const GlobalWS = (()=>{
-    let wsServer;
+
     return class GlobalWS {
         constructor(){
             console.log("GlobalWS constructor", wsServer);
@@ -19,6 +19,9 @@ export const GlobalWS = (()=>{
                         console.log('Client disconnesso');
                     });
                 });
+                wsServer.on('error', (err) => {
+                    console.log('Client error', err);
+                })
             }
             return wsServer;
         }

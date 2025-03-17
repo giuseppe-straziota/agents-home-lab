@@ -1,9 +1,8 @@
 import redisClient from "@/lib/redis";
 
-
 export async function GET() {
     try {
-        const result = await redisClient.get('test2')
+        const result = await redisClient!.get('test2')
         console.log("getRedisClient call")
         return new Response(JSON.stringify(result), {
             status: 200,

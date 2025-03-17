@@ -1,10 +1,13 @@
 import {GlobalWS} from "@/lib/websocket";
 
-
 export async function GET() {
     try {
-        console.log("wsServer call", new GlobalWS()  )
-        return new Response(JSON.stringify({exist: true}), {
+        const socket = new GlobalWS();
+        let exist = false
+        if (socket) {
+            exist = true
+        }
+        return new Response(JSON.stringify({exist: exist}), {
             status: 200,
             headers: { 'Content-Type': 'application/json' }
         });

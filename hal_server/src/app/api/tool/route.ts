@@ -1,10 +1,10 @@
 import pool from "@/database/db";
-
+import {map} from "@/tools/toolMap";
 
 export async function GET() {
     try {
-        const result = await pool.query('SELECT * FROM configuration')
-        console.log("configuration list call")
+        const result = await pool.query('SELECT * FROM tool')
+        console.log("tool list call")
         return new Response(JSON.stringify(result.rows), {
             status: 200,
             headers: { 'Content-Type': 'application/json' }
@@ -18,13 +18,13 @@ export async function GET() {
 export async function POST(request: Request) {
     // Parse the request body
     const body = await request.json();
-    const { name } = body;
-
-    // e.g. Insert new user into your DB
-    const newUser = { id: Date.now(), name };
-
-    return new Response(JSON.stringify(newUser), {
-        status: 201,
-        headers: { 'Content-Type': 'application/json' }
-    });
+    const { toolName, tableName } = body;
+    try {
+        // @ts-expect-error todo
+        map[toolName](tableName).then((data)=>{
+            console.log(data);
+        })
+    }catch(error){
+        console.log(error)
+    }
 }

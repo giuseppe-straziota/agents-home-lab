@@ -7,6 +7,11 @@ export interface Setting  {
     value: string,
 }
 
+export interface Tool {
+    name: string,
+    template: object
+}
+
 export interface Agent  {
     title:string,
     url: string,
@@ -21,6 +26,7 @@ declare module "typesafe-actions" {
     export type RootAction = ActionType<typeof import("./root-action").default>;
 
     export type SettingsModel = Setting[]
+    export type ToolsModel = Tool[];
    // export type Store = StateType<typeof import('./index').default>;
    export type RootState = StateType<ReturnType<typeof import('./root-reducer').default>>;
    // export type RootAction = ActionType<typeof import('./root-action').default>;
