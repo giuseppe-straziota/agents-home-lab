@@ -1,11 +1,13 @@
+import { toast } from "sonner"
+import { useEffect } from "react";
+import WSContext from "./WebsocketContext";
 
-import {useEffect} from "react";
 
 const WebSocketCmp = ({ children }: { children: React.ReactNode}) =>{
 
     const socket = new WebSocket('ws://localhost:3006/ws');
 
-    function sendMessage(message:  string | ArrayBufferLike | Blob | ArrayBufferView) {
+    const sendWSMessage = (message: string | ArrayBufferLike | Blob | ArrayBufferView): void=> {
         console.log('sendMessage', message)
         socket.send(message);
     }
@@ -15,7 +17,8 @@ const WebSocketCmp = ({ children }: { children: React.ReactNode}) =>{
         socket.onopen = function(event) {
             // Handle connection open
             console.log('onopen', event);
-            sendMessage(JSON.stringify({test: Date.now()}))
+            sendWSMessage(JSON.stringify({test: Date.now()}))
+            toast("websocket message sended")
         };
 
         socket.onmessage = function(event) {
@@ -34,9 +37,9 @@ const WebSocketCmp = ({ children }: { children: React.ReactNode}) =>{
     },[]);
 
     return (
-        <div>
+        <WSContext.Provider value={ {sendWSMessage} }>
             {children}
-        </div>
+        </WSContext.Provider>
     )
 }
 

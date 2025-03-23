@@ -4,22 +4,23 @@ import { Input } from "@/components/ui/input";
 import { Button } from "@/components/ui/button";
 import { ScrollArea } from "@/components/ui/scroll-area";
 import { SendHorizonal } from "lucide-react";
-import { useState } from "react";
+import { useContext, useState } from "react";
 import { cn } from "@/lib/utils";
 import { Badge } from "@/components/ui/badge"
+import WSContext from "@/components/app/Websocket/WebsocketContext";
 
 export default function Console() {
+    const {sendWSMessage}  = useContext(WSContext)
     const [messages, setMessages] = useState([
         { id: 1, text: "Ciao, come posso aiutarti?", sender: "bot" },
         { id: 2, text: "Vorrei sapere qualcosa su...", sender: "user" },
-        { id: 3, text: "Ciao, come posso aiutarti?", sender: "bot" },
-        { id: 4, text: "Vorrei sapere qualcosa su...", sender: "user" },
     ]);
     const [input, setInput] = useState("");
 
     const sendMessage = () => {
         if (input.trim() === "") return;
         setMessages([...messages, { id: Date.now(), text: input, sender: "user" }]);
+        sendWSMessage(JSON.stringify({text: input.trim(), agent:"alfred"}));
         setInput("");
     };
 
@@ -37,17 +38,7 @@ export default function Console() {
                     <ScrollArea className="h-[150px] p-4">
                         {messages.map((msg) => (
                             <div key={msg.id} className={cn(getCardPosition(msg.sender),'flex gap-3 my-3 w-full flex-col')  }>
-                                {/*<Avatar>*/}
-                                {/*    <img*/}
-                                {/*        src={*/}
-                                {/*            msg.sender === "user"*/}
-                                {/*                ? "https://ui.shadcn.com/avatars/02.png"*/}
-                                {/*                : "https://ui.shadcn.com/avatars/03.png"*/}
-                                {/*        }*/}
-                                {/*        alt="avatar"*/}
-                                {/*    />*/}
-                                {/*</Avatar>*/}
-                                <Badge >{msg.sender}</Badge>
+                                {msg.sender !== 'user' && <Badge>{msg.sender}</Badge>}
                                 <div className="bg-muted rounded-xl p-3 shadow-sm">
                                     {msg.text}
                                 </div>

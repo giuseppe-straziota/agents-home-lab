@@ -13,9 +13,18 @@ export interface Tool {
 }
 
 export interface Agent  {
-    title:string,
-    url: string,
-    icon:  LucideIcon
+    name:string,
+    active: boolean,
+    icon:  LucideIcon,
+    llms: Array[{name:string, config: object, uuid: string}],
+    tools: Array[{name:string, config: object, uuid: string}],
+    uuid: string,
+}
+
+export interface AgentRequest {
+    agent_uuid: string|undefined,
+    name:string,
+    active: boolean,
 }
 
 declare module "typesafe-actions" {
@@ -31,7 +40,7 @@ declare module "typesafe-actions" {
    export type RootState = StateType<ReturnType<typeof import('./root-reducer').default>>;
    // export type RootAction = ActionType<typeof import('./root-action').default>;
     export type RootEpic = Epic<RootAction, RootAction, RootState>;
-    export type AgentsModel = Agent[]
+    export type AgentsModel = Agent[];
     interface Types {
         RootAction: ActionType<typeof import('./root-action').default>;
     }

@@ -1,4 +1,4 @@
-import {GlobalWS} from "@/lib/websocket";
+import {GlobalWS} from "@/server/lib/websocket";
 
 export async function GET() {
     try {

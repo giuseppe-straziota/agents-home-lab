@@ -19,11 +19,12 @@ const enhancer = composeEnhancers(applyMiddleware(...middlewares));
 
 // rehydrate state on app start
 const initialState : RootState= {
-    agents: {list: [] as AgentsModel },
-    settings: {list: [] as SettingsModel, tools: [] as ToolsModel }
+    agents: {list: [] as AgentsModel, selected: undefined },
+    settings: {configuration: [] as SettingsModel, tools: [] as ToolsModel }
 };
 
 // create store
+// @ts-expect-error possible recursive object
 const store = createStore(rootReducer(), initialState, enhancer);
 
 epicMiddleware.run(rootEpic);

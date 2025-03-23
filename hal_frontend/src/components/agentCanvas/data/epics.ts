@@ -1,46 +1,47 @@
 
 import { from, of} from 'rxjs';
-import {filter, switchMap, map, catchError} from 'rxjs/operators';
-import { isActionOf} from 'typesafe-actions';
+import { filter, switchMap, map, catchError} from 'rxjs/operators';
+import { isActionOf } from 'typesafe-actions';
 
 import {
-    loadAgentAsync
+    upsertAgentAsync,
+    loadAgentsAsync,
+    deleteAgentAsync
 } from './agents_actions.ts';
-import {Bot} from "lucide-react";
-import {AgentsModel} from "typesafe-actions";
 import { RootEpic } from 'typesafe-actions';
+import {upsertAgent, loadAgents, deleteAgent} from "@/components/agentCanvas/data/api_fetch.ts";
 
-function loadAgent(): Promise<AgentsModel>  {
-    return new Promise((resolve) => {
-        fetch('/api/agent', {
-            method: "GET",
-            headers: {
-                "Content-Type": "application/json",
-            },
-        })
-            .then((res) => {
-                return res.json();
-            })
-            .then((data) => {
-                console.log('data from api agent', data);
-                resolve(data.map((agent: { name: string; }) => {
-                    return {
-                        title: agent.name,
-                        url: "#",
-                        icon: Bot,
-                    }
-                }) as AgentsModel)
-            });
-    })
-}
-
-export const loadArticlesEpic: RootEpic = (action$) =>
+export const loadAgentsEpic: RootEpic = (action$) =>
     action$.pipe(
-        filter(isActionOf(loadAgentAsync.request)),
+        filter(isActionOf(loadAgentsAsync.request)),
         switchMap(() =>
-            from(loadAgent()).pipe(
-                map(loadAgentAsync.success),
-                catchError(message => of(loadAgentAsync.failure(message)))
+            from(loadAgents()).pipe(
+                map(loadAgentsAsync.success),
+                catchError(message => of(loadAgentsAsync.failure(message)))
+            )
+        )
+    );
+
+export const addAgentEpic: RootEpic = (action$) =>
+    action$.pipe(
+        filter(isActionOf(upsertAgentAsync.request)),
+        switchMap((action) =>
+            from(upsertAgent(action.payload)).pipe(
+                // map(upsertAgentAsync.success),
+                map(loadAgentsAsync.request),
+                catchError(message => of(upsertAgentAsync.failure(message)))
+            )
+        )
+    );
+
+export const deleteAgentEpic: RootEpic = (action$) =>
+    action$.pipe(
+        filter(isActionOf(deleteAgentAsync.request)),
+        switchMap((action) =>
+            from(deleteAgent(action.payload)).pipe(
+                // map(upsertAgentAsync.success),
+                map(loadAgentsAsync.request),
+                catchError(message => of(deleteAgentAsync.failure(message)))
             )
         )
     );

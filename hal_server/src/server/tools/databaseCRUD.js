@@ -1,6 +1,6 @@
-import pool from "@/database/db";
+import pool from "../database/db.js";
 
-export const readFromTable = async (tableName: string) => {
+export const dbInteraction = async (tableName) => {
 
     try {
         const result = await pool.query('SELECT * FROM ' + tableName)

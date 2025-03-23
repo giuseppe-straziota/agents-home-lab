@@ -1,4 +1,5 @@
 import {WebSocketServer} from 'ws'
+import {map} from "../tools/toolMap.js";
 let wsServer;
 export const GlobalWS = (()=>{
 
@@ -12,6 +13,10 @@ export const GlobalWS = (()=>{
 
                     ws.on('message', (message) => {
                         console.log(`Messaggio ricevuto: ${JSON.parse(message)}`);
+                        // @ts-expect-error todo
+                        map['readFromTable']('category').then((data)=>{
+                            console.log(data);
+                        })
                         ws.send(`Echo: ${message}`);
                     });
 
