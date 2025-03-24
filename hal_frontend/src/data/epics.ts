@@ -9,6 +9,7 @@ import {
 } from './actions';
 import { RootEpic } from 'typesafe-actions';
 import {createTool, loadConfiguration, loadTools} from "@/data/api_fetch.ts";
+import {loadAgentsAsync} from "@/components/agentCanvas/data/agents_actions.ts";
 
 
 export const loadArticlesEpic: RootEpic = (action$) =>
@@ -37,7 +38,7 @@ export const createToolEpic: RootEpic = (action$) =>
         filter(isActionOf(createToolAsync.request)),
         switchMap((action) =>
             from(createTool(action.payload)).pipe(
-                map(createToolAsync.success),
+                map(loadAgentsAsync.request),
                 catchError(message => of(createToolAsync.failure(message)))
             )
         )

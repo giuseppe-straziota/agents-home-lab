@@ -1,4 +1,4 @@
-import {EdgeTypes, Position} from "@xyflow/react";
+import {Position} from "@xyflow/react";
 import {Agent} from "@/store/types";
 
 
@@ -91,9 +91,9 @@ export const createAgentStructure =  ( structure, agent: Agent) => {
         })
         agent.tools.forEach((tool, index: number) => {
             structure.push( {
-                id: tool.tool_name,
-                data: { label: tool.tool_config.tool_name },
-                position: { x: 20, y: 20*(index+1) },
+                id: tool.tool_uuid,
+                data: { label: tool.tool_config.tool_name, type:"tool", fn: tool.tool_name},
+                position: { x: 20, y: 20+(50*index) },
                 parentId: 'group_tools',
                 extent: 'parent',
                 type: 'basicNode'

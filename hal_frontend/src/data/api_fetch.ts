@@ -1,4 +1,5 @@
 import {SettingsModel, ToolsModel} from "typesafe-actions";
+import {ToolRequest} from "@/store/types";
 
 export {loadTools, loadConfiguration, createTool};
 
@@ -39,13 +40,7 @@ function loadTools(): Promise<ToolsModel>  {
     })
 }
 
-function createTool(tool:{
-    agent_uuid: string;
-    table: string;
-    fn_name: string;
-    field: string;
-    config: { tool_name: string };
-}): Promise<ToolsModel>  {
+function createTool(tool: ToolRequest): Promise<ToolsModel>  {
     return new Promise((resolve) => {
         fetch('/api/tool', {
             method: "POST",

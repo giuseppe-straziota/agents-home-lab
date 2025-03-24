@@ -43,6 +43,7 @@ export default function RightPanel() {
         if (!openSheet) {
             setActionSelected(undefined)
             setSelectedConf(undefined)
+
         }
     }, [openSheet]);
 
@@ -50,12 +51,13 @@ export default function RightPanel() {
     const onSubmit: SubmitHandler<any> = (data) => {
         dispatch(createToolAsync.request({
             agent_uuid: selectedAgent,
-            table: data.table,
-            field: data.field,
             fn_name: selectedConf.fn_name,
-            config: { tool_name: data.tool_name }
+            config: { tool_name: data.tool_name , table: data.table,
+                field: data.field, action: data.action}
         }))
         console.log(selectedAgent, data)
+        setOpenSheet(false);
+
     }
 
     return (
@@ -167,8 +169,7 @@ export default function RightPanel() {
                                                     return <div key={key}>{key}</div>
                                                 })
                                             }
-
-                            <Button type="submit">Submit</Button>
+                            <Button type="submit" className={'float-right mx-5'}>save</Button>
                         </form>
                     }
                 </SheetContent>

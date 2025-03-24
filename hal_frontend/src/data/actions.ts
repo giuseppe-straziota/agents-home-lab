@@ -1,5 +1,6 @@
 import { createAsyncAction } from 'typesafe-actions';
 import {SettingsModel, ToolsModel} from "typesafe-actions";
+import {ToolRequest} from "@/store/types";
 
 export const loadSettingsAsync = createAsyncAction(
     'LOAD_SETTINGS_REQUEST',
@@ -17,10 +18,4 @@ export const createToolAsync = createAsyncAction(
     'CREATE_TOOL_REQUEST',
     'CREATE_TOOL_SUCCESS',
     'CREATE_TOOL_FAILURE'
-)<{
-    agent_uuid: string;
-    table: string;
-    fn_name: string;
-    field: string;
-    config: { tool_name: string };
-}, ToolsModel, string>();
+)<ToolRequest, ToolsModel, string>();

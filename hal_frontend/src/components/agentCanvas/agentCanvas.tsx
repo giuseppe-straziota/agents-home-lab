@@ -9,7 +9,7 @@ import {
     useEdgesState
 } from '@xyflow/react';
 import '@xyflow/react/dist/style.css';
-import {useCallback, useEffect, useMemo, useState} from "react";
+import {useCallback, useEffect, useMemo, useRef, useState} from "react";
 import {AgentNode} from "./customComponents/AgentNode.tsx";
 import {GroupNode} from "./customComponents/GroupNode.tsx";
 import {BasicNode} from "./customComponents/BasicNode.tsx";
@@ -17,9 +17,11 @@ import {Sheet, SheetContent, SheetDescription, SheetHeader, SheetTitle} from "@/
 import {useSelector} from "react-redux";
 import {AgentsModel, RootState} from "typesafe-actions";
 import {createAgentStructure, getEdges} from "@/components/agentCanvas/utils/structure.ts";
+import {DynamicForm} from "@/components/agentCanvas/utils/dynamicForm.tsx";
 
 
 export default function AgentCanvas(){
+    const flowRef = useRef();
     const nodeTypes = useMemo(() => (
         {
             agentNode: AgentNode,
@@ -30,12 +32,24 @@ export default function AgentCanvas(){
     const [openSheet, setOpenSheet] = useState<boolean>(false);
     const [nodes, setNodes] = useState<Node[]>([]);
     const onNodesChange: OnNodesChange = useCallback(
-        (changes) => setNodes((nds) => applyNodeChanges(changes, nds)),
-        [setNodes],
+        (changes) =>
+        {
+            setNodes((nds) => applyNodeChanges(changes, nds))
+            flowRef.current.fitView({
+                padding: 0.1,
+                includeHiddenNodes: false,
+                minZoom: 0.1,
+                maxZoom: 1,
+                duration: 200,
+                nodes: [{id: 'agent'},{id: 'group_tools'},{id: 'group_llms'},{id: 'group_trigger'}],
+            })
+        }, [setNodes],
     );
     const [edges, setEdges, onEdgesChange] = useEdgesState([]);
     const listOfAgents: AgentsModel = useSelector<RootState, AgentsModel>((state: RootState) => state.agents.list)
     const selectedAgent: string = useSelector<RootState, string>((state: RootState) => state.agents.selected)
+    const [nodeSelected, setNodeSelected] = useState({});
+
     const getStructure = useCallback((): Node[] => {
     const structure = [] as Node[];
         listOfAgents
@@ -51,22 +65,22 @@ export default function AgentCanvas(){
         setEdges(getEdges());
     }, [selectedAgent]);
 
+    useEffect(() => {
+        setNodes(getStructure())
+    }, [listOfAgents]);
+
     return (
         <div className={'h-2/3'}>
-            <ReactFlow
+            <ReactFlow onInit={(instance)=>{
+                flowRef.current = instance
+            }}
                 fitView={true}
-                fitViewOptions={{
-                    padding: 0.1,
-                    includeHiddenNodes: false,
-                    minZoom: 0.1,
-                    maxZoom: 1,
-                    duration: 200,
-                    nodes: [{id: 'agent'}],
-                }}
+
                 onNodeClick={(event, node)=>{
                     console.log(event,node);
                     if (node.type !== 'groupNode') {
                         setOpenSheet(!openSheet)
+                        setNodeSelected(node);
                     }
                 }}
                 onNodesChange={onNodesChange}
@@ -99,9 +113,9 @@ export default function AgentCanvas(){
                     <SheetHeader>
                         <SheetTitle>ttt</SheetTitle>
                         <SheetDescription>
-                              form
                         </SheetDescription>
                     </SheetHeader>
+                    <DynamicForm node={{value: nodeSelected}} />
                 </SheetContent>
             </Sheet>
         </div>

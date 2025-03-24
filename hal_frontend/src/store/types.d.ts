@@ -27,6 +27,13 @@ export interface AgentRequest {
     active: boolean,
 }
 
+export interface ToolRequest {
+    agent_uuid: string,
+    fn_name: string,
+    config: { tool_name: string , table: string,
+        field: string, action: string}
+}
+
 declare module "typesafe-actions" {
     export type Store = StateType<typeof import("./store").default>;
 

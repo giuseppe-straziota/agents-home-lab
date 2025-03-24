@@ -67,6 +67,7 @@ export default function LeftPanel() {
     const deleteAgent = (event)=>{
         console.log(event, currentAgent?.uuid)
         dispatch(deleteAgentAsync.request({agent_uuid: currentAgent!.uuid!}))
+        setOpenDialog(false)
     }
 
     const getForm = useMemo(()=>{
