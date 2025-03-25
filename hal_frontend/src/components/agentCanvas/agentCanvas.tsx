@@ -111,11 +111,11 @@ export default function AgentCanvas(){
             <Sheet open={openSheet} onOpenChange={setOpenSheet} >
                 <SheetContent >
                     <SheetHeader>
-                        <SheetTitle>ttt</SheetTitle>
+                        <SheetTitle>Configure</SheetTitle>
                         <SheetDescription>
                         </SheetDescription>
                     </SheetHeader>
-                    <DynamicForm node={{value: nodeSelected}} />
+                    <DynamicForm node={{value: nodeSelected, setOpenSheet:setOpenSheet}} />
                 </SheetContent>
             </Sheet>
         </div>

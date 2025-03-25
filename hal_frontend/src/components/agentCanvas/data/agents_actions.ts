@@ -20,4 +20,5 @@ export const deleteAgentAsync = createAsyncAction(
     'DELETE_AGENT_FAILURE'
 )<{agent_uuid:string}, AgentsModel, string>();
 
+
 export const selectedAgentAct = createAction('selected/agent')<string>();

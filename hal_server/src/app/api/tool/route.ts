@@ -24,15 +24,43 @@ export async function POST(request: Request) {
         agent_uuid,
         fn_name,
         config,
+        tool_uuid
     } = body;
     try {
-        // @ts-expect-error todo
         // const result =await map[fn_name](table)
-        const id_agent = await pool.query('SELECT id FROM agent WHERE uuid = $1', [agent_uuid]);
-        const id_tool = await pool.query('SELECT id FROM tool WHERE name = $1', [fn_name]);
-        const result = await pool.query(
-            'INSERT INTO agent_tool (id_agent,id_tool, uuid, config) VALUES ($1,$2, $3,$4) ', [id_agent.rows[0].id, id_tool.rows[0].id, uuidv4(), config])
+       let result;
 
+       if (!tool_uuid) {
+           const id_agent = await pool.query('SELECT id FROM agent WHERE uuid = $1', [agent_uuid]);
+           const id_tool = await pool.query('SELECT id FROM tool WHERE name = $1', [fn_name]);
+           result = await pool.query(
+               'INSERT INTO agent_tool (id_agent,id_tool, uuid, config) VALUES ($1,$2, $3,$4) ', [id_agent.rows[0].id, id_tool.rows[0].id, uuidv4(), config])
+        }else{
+           result = await  pool.query('UPDATE agent_tool SET config = $1 WHERE uuid = $2',[config,tool_uuid]
+           )
+       }
+
+        console.log(result);
+        return new Response(JSON.stringify({rows:result}), {
+            status: 200,
+            headers: { 'Content-Type': 'application/json' }
+        });
+    }catch(error){
+        console.log(error)
+    }
+}
+
+
+export async function DELETE(request: Request) {
+    // Parse the request body
+    const body = await request.json();
+    console.log(body);
+    const {
+        tool_uuid,
+    } = body;
+    try {
+        // const result =await map[fn_name](table)
+        const result = await pool.query('DELETE FROM agent_tool WHERE uuid = $1', [tool_uuid]);
         console.log(result);
         return new Response(JSON.stringify({rows:result}), {
             status: 200,

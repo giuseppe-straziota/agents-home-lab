@@ -1,6 +1,6 @@
 import {useEffect, useState} from "react";
 import {useSelector,useDispatch} from "react-redux";
-import {RootState, SettingsModel, ToolsModel} from "typesafe-actions";
+import {RootState, ToolsModel} from "typesafe-actions";
 import {Database, Hammer} from "lucide-react";
 import {Button} from "@/components/ui/button.tsx";
 import {Sheet, SheetContent, SheetDescription, SheetHeader, SheetTitle} from "@/components/ui/sheet.tsx";
@@ -18,7 +18,7 @@ import {Label} from "@/components/ui/label.tsx";
 
 
 import { useForm, SubmitHandler } from "react-hook-form"
-import {createToolAsync} from "@/data/actions.ts";
+import {upsertToolAsync} from "@/data/actions.ts";
 interface ConfType {
    fn_name:string;
    conf: { [key: string]: { [key: string]: string } }
@@ -26,8 +26,6 @@ interface ConfType {
 
 export default function RightPanel() {
     const dispatch = useDispatch();
-    const [configuration, setConfiguration] = useState<SettingsModel>([]);
-    const settings = useSelector<RootState, SettingsModel>((state: RootState) => state.settings.configuration);
     const tools = useSelector<RootState, ToolsModel>((state: RootState) => state.settings.tools);
     const [openSheet, setOpenSheet] = useState<boolean>(false);
     const [actionSelected, setActionSelected] = useState<string | undefined>(undefined);
@@ -35,9 +33,6 @@ export default function RightPanel() {
     const selectedAgent: string = useSelector<RootState, string>((state: RootState) => state.agents.selected)
 
 
-    useEffect(() => {
-        setConfiguration(settings);
-    }, [settings]);
 
     useEffect(() => {
         if (!openSheet) {
@@ -49,7 +44,8 @@ export default function RightPanel() {
 
     const { register, handleSubmit, setValue } = useForm()
     const onSubmit: SubmitHandler<any> = (data) => {
-        dispatch(createToolAsync.request({
+        dispatch(upsertToolAsync.request({
+            tool_uuid: undefined,
             agent_uuid: selectedAgent,
             fn_name: selectedConf.fn_name,
             config: { tool_name: data.tool_name , table: data.table,
@@ -82,10 +78,7 @@ export default function RightPanel() {
                 </Button>
 
             ))}
-            {
-                (configuration || []).map((conf: { value: string, name: string }) =>
-                    <div className="bg-gray-400" key={conf.name}>{conf.name}:{conf.value}</div>)
-            }
+
             <Sheet open={openSheet} onOpenChange={setOpenSheet}>
                 <SheetContent>
                     <SheetHeader>

@@ -4,11 +4,11 @@ import {filter, switchMap, map, catchError} from 'rxjs/operators';
 import { isActionOf} from 'typesafe-actions';
 
 import {
-    createToolAsync,
+    upsertToolAsync, deleteToolAsync,
     loadSettingsAsync, loadToolsAsync
 } from './actions';
 import { RootEpic } from 'typesafe-actions';
-import {createTool, loadConfiguration, loadTools} from "@/data/api_fetch.ts";
+import {upsertTool, deleteTool, loadConfiguration, loadTools} from "@/data/api_fetch.ts";
 import {loadAgentsAsync} from "@/components/agentCanvas/data/agents_actions.ts";
 
 
@@ -35,11 +35,22 @@ export const loadToolsEpic: RootEpic = (action$) =>
 
 export const createToolEpic: RootEpic = (action$) =>
     action$.pipe(
-        filter(isActionOf(createToolAsync.request)),
+        filter(isActionOf(upsertToolAsync.request)),
         switchMap((action) =>
-            from(createTool(action.payload)).pipe(
+            from(upsertTool(action.payload)).pipe(
                 map(loadAgentsAsync.request),
-                catchError(message => of(createToolAsync.failure(message)))
+                catchError(message => of(upsertToolAsync.failure(message)))
+            )
+        )
+    );
+
+export const deleteToolEpic: RootEpic = (action$) =>
+    action$.pipe(
+        filter(isActionOf(deleteToolAsync.request)),
+        switchMap((action) =>
+            from(deleteTool(action.payload)).pipe(
+                map(loadAgentsAsync.request),
+                catchError(message => of(deleteToolAsync.failure(message)))
             )
         )
     );

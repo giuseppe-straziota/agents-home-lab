@@ -1,7 +1,7 @@
 import {SettingsModel, ToolsModel} from "typesafe-actions";
 import {ToolRequest} from "@/store/types";
 
-export {loadTools, loadConfiguration, createTool};
+export {loadTools, loadConfiguration, upsertTool, deleteTool};
 
 function loadConfiguration(): Promise<SettingsModel>  {
     return new Promise((resolve) => {
@@ -40,7 +40,7 @@ function loadTools(): Promise<ToolsModel>  {
     })
 }
 
-function createTool(tool: ToolRequest): Promise<ToolsModel>  {
+function upsertTool(tool: ToolRequest): Promise<ToolsModel>  {
     return new Promise((resolve) => {
         fetch('/api/tool', {
             method: "POST",
@@ -59,5 +59,26 @@ function createTool(tool: ToolRequest): Promise<ToolsModel>  {
                 resolve(data);
             });
 
+    })
+}
+
+function deleteTool(data: {tool_uuid:string}): Promise<ToolsModel>  {
+    return new Promise((resolve) => {
+        fetch('/api/tool', {
+            method: "DELETE",
+            headers: {
+                "Content-Type": "application/json",
+            },
+            body: JSON.stringify({
+                tool_uuid: data.tool_uuid
+            }),
+        })
+            .then((res) => {
+                return res.json();
+            })
+            .then((data) => {
+                console.log('data from api add agent', data);
+                resolve(data)
+            });
     })
 }

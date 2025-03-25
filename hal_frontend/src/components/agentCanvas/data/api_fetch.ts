@@ -86,3 +86,4 @@ function deleteAgent(data: {agent_uuid:string}): Promise<AgentsModel>  {
             });
     })
 }
+

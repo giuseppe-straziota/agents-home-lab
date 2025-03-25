@@ -1,8 +1,8 @@
 import {Agent} from "@/store/types";
 import {useEffect, useMemo, useState} from "react";
 import {useDispatch, useSelector} from "react-redux";
-import {AgentsModel, RootState} from "typesafe-actions";
-import {BotIcon, PlusIcon, WrenchIcon} from "lucide-react";
+import {AgentsModel, RootState, SettingsModel} from "typesafe-actions";
+import {BotIcon, PlusIcon, SettingsIcon, WrenchIcon} from "lucide-react";
 import {Label} from "@radix-ui/react-dropdown-menu";
 import {Button} from "@/components/ui/button.tsx";
 import {deleteAgentAsync, selectedAgentAct, upsertAgentAsync} from "@/components/agentCanvas/data/agents_actions.ts";
@@ -28,9 +28,11 @@ export default function LeftPanel() {
     const listOfAgents: AgentsModel = useSelector<RootState, AgentsModel>((state: RootState) => state.agents.list)
     const selectedAgentUuid: string = useSelector<RootState, string>((state: RootState) => state.agents.selected)
     const [openDialog, setOpenDialog] = useState<boolean>(false);
+    const [openDialogSetting, setOpenDialogSetting] = useState<boolean>(false);
     const [isNewAgent, setIsNewAgent] = useState<boolean>(false);
     const [currentAgent, setCurrentAgent] = useState<Agent | undefined>(undefined);
-
+    const settings = useSelector<RootState, SettingsModel>((state: RootState) => state.settings.configuration);
+    const [configuration, setConfiguration] = useState<SettingsModel>([]);
     useEffect(() => {
         setAgents(listOfAgents)
         console.log(selectedAgentUuid)
@@ -45,6 +47,11 @@ export default function LeftPanel() {
             setIsNewAgent(false)
         }
     }, [openDialog]);
+
+
+    useEffect(() => {
+        setConfiguration(settings);
+    }, [settings]);
 
     type FormAgent = {
         name:string,
@@ -99,6 +106,7 @@ export default function LeftPanel() {
 
 
     return (
+        <>
         <div className={"w-50 flex-none bg-lime-50 p-5"}>
              <BotIcon size={100} className={'m-5'}/>
             <div className={" flex flex-row gap-3 "}>
@@ -127,7 +135,7 @@ export default function LeftPanel() {
                             )}>
                             <item.icon/>
                             <span className={'grow'}>{item.name}</span>
-                            <WrenchIcon className={'flex-none'}
+                            <SettingsIcon size={'20'} className={'flex-none relative my-1 hover:fill-yellow-300/60'}
                                 onClick={(event)=>{
                                     setOpenDialog(!openDialog)
                                     setCurrentAgent(listOfAgents.find(agent=>agent.uuid === item.uuid))
@@ -158,6 +166,41 @@ export default function LeftPanel() {
                 </DialogContent>
             </Dialog>
         </div>
+        <div className={'absolute bottom-0 p-6'}
+             title={'test'}>
+            <WrenchIcon
+                className={'hover:fill-blue-400/70'}
+                onClick={() => {setOpenDialogSetting(true)}}
+            />
+            <Dialog open={openDialogSetting} onOpenChange={setOpenDialogSetting}  >
+                <DialogContent className="sm:max-w-[425px]" >
+                    <DialogHeader>
+                        <DialogTitle>Edit profile</DialogTitle>
+                        <DialogDescription>
+                            Make changes to your agent.
+                        </DialogDescription>
+                    </DialogHeader>
+                    <form  onSubmit={handleSubmit(upsertAgent)}>
+                        {
+                            (configuration || []).map((conf: { value: string, name: string }) =>
+                                <div key={conf.name}  className={'py-2'}>
+                                    <Label>{conf.name} </Label>
+                                    <Switch defaultChecked={conf.value==="true"}
+                                            onCheckedChange={(state)=>{
+
+                                            }}
+
+                                    />
+                                </div>
+                            )
+                        }
+                        <DialogFooter className={'p-2 my-3'}>
+                        </DialogFooter>
+                    </form>
+                </DialogContent>
+            </Dialog>
+        </div>
+        </>
     )
 }
 

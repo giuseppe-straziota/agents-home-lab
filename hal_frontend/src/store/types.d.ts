@@ -31,7 +31,8 @@ export interface ToolRequest {
     agent_uuid: string,
     fn_name: string,
     config: { tool_name: string , table: string,
-        field: string, action: string}
+        field: string, action: string},
+    tool_uuid: string|undefined,
 }
 
 declare module "typesafe-actions" {

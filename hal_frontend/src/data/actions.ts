@@ -14,8 +14,14 @@ export const loadToolsAsync = createAsyncAction(
     'LOAD_TOOLS_FAILURE'
 )<undefined, ToolsModel, string>();
 
-export const createToolAsync = createAsyncAction(
+export const upsertToolAsync = createAsyncAction(
     'CREATE_TOOL_REQUEST',
     'CREATE_TOOL_SUCCESS',
     'CREATE_TOOL_FAILURE'
 )<ToolRequest, ToolsModel, string>();
+
+export const deleteToolAsync = createAsyncAction(
+    'DELETE_TOOL_REQUEST',
+    'DELETE_TOOL_SUCCESS',
+    'DELETE_TOOL_FAILURE'
+)<{tool_uuid:string}, ToolsModel, string>();
