@@ -1,5 +1,6 @@
 import pool from "@/server/database/db";
 import {v4 as uuidv4} from 'uuid';
+import redis from "@/server/lib/redis";
 
 export async function GET() {
     try {
@@ -14,6 +15,7 @@ export async function GET() {
                 tools: result_tool.rows.filter(tool=> tool.agent_uuid == row.uuid),
                 name: row.name,
                 active: row.active,
+                description: row.description,
             }
         })
          console.log("agent list result_agents", agents)
@@ -31,15 +33,19 @@ export async function GET() {
 export async function POST(request: Request) {
     // Parse the request body
     const body = await request.json();
-    const { name, agent_uuid, active } = body;
+    const { name, agent_uuid, active, description } = body;
     console.log('post agent call', body)
     let result;
     if (!agent_uuid){
-        result = await pool.query('INSERT INTO agent (name,active, uuid) VALUES ($1,$2, $3)  RETURNING uuid', [name, active, uuidv4()])
+        result = await pool.query('INSERT INTO agent (name,active, uuid, description) VALUES ($1,$2, $3, $4)  RETURNING uuid', [name, active, uuidv4(), description])
     }else{
-        result = await pool.query('UPDATE agent SET name = $1 ,active = $2 WHERE uuid = $3' , [name, active, agent_uuid])
+        result = await pool.query('UPDATE agent SET name = $1 ,active = $2, description = $3 WHERE uuid = $4' , [name, active, description,agent_uuid])
     }
-
+    try {
+        await redis.pubSubClient!.publish('info', 'agents update'+ name);
+    } catch (error) {
+        console.error('Error publishing message:', error);
+    }
     console.log('post agent result', result.rows)
     return new Response(JSON.stringify({name: name, id: result.rows[0]?result.rows[0].id:agent_uuid}), {
         status: 201,

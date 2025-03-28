@@ -1,10 +1,9 @@
 import {WebSocketServer} from 'ws'
-import {map} from "../tools/toolMap.js";
 let wsServer;
-export const GlobalWS = (()=>{
 
-    return class GlobalWS {
-        constructor(){
+export class GlobalWS {
+
+         constructor(){
             console.log("GlobalWS constructor", wsServer);
             if (!wsServer) {
                 wsServer = new WebSocketServer( {port:   3006, path:"/ws"});
@@ -13,10 +12,6 @@ export const GlobalWS = (()=>{
 
                     ws.on('message', (message) => {
                         console.log(`Messaggio ricevuto: ${JSON.parse(message)}`);
-                        // @ts-expect-error todo
-                        map['readFromTable']('category').then((data)=>{
-                            console.log(data);
-                        })
                         ws.send(`Echo: ${message}`);
                     });
 
@@ -28,10 +23,17 @@ export const GlobalWS = (()=>{
                     console.log('Client error', err);
                 })
             }
-            return wsServer;
+
         }
+
+        getInstance() {
+        if (!wsServer) {
+            throw new Error("WebSocket server not initialized");
+        }
+        return wsServer;
     }
-})()
+
+}
 
 
 

@@ -70,15 +70,17 @@ export default function AgentCanvas(){
     }, [listOfAgents]);
 
     return (
-        <div className={'h-2/3'}>
-            <ReactFlow onInit={(instance)=>{
+        <div className={'grow h-2/3'}>
+            <ReactFlow
+
+                onInit={(instance)=>{
                 flowRef.current = instance
             }}
                 fitView={true}
 
                 onNodeClick={(event, node)=>{
                     console.log(event,node);
-                    if (node.type !== 'groupNode') {
+                    if (node.type !== 'groupNode' && !['chat','agent'].includes(node.id)) {
                         setOpenSheet(!openSheet)
                         setNodeSelected(node);
                     }
@@ -88,9 +90,10 @@ export default function AgentCanvas(){
                 nodeTypes={nodeTypes}
                 attributionPosition="bottom-left"
                 nodes={nodes} edges={edges}>
-                <Background />
-                <Controls />
-                <MiniMap
+                <Background   />
+                <Controls position={"top-center"}  orientation={'horizontal'}/>
+                <MiniMap pannable={true} zoomable={true} zoomStep={1}
+                   bgColor={'oklch(0.446 0.03 256.802)'}
                     nodeStrokeColor={(n) => {
                         if (n.type === 'input') return '#0041d0';
                         if (n.type === 'selectorNode') return '#c9f1dd';
@@ -109,7 +112,7 @@ export default function AgentCanvas(){
                 />
             </ReactFlow>
             <Sheet open={openSheet} onOpenChange={setOpenSheet} >
-                <SheetContent >
+                <SheetContent  className={'bg-zinc-800 mb-2'} >
                     <SheetHeader>
                         <SheetTitle>Configure</SheetTitle>
                         <SheetDescription>

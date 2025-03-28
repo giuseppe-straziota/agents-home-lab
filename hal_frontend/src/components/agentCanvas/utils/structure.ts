@@ -17,14 +17,14 @@ export const createAgentStructure =  ( structure, agent: Agent) => {
         type: 'groupNode',
         data: {
             label: 'trigger',
-            backgroundColor: 'bg-fuchsia-400/10',
+            backgroundColor: 'bg-purple-400/20',
             type: 'source',
             position: Position.Right,
         },
         resizing: true,
         position: { x: 0, y: 0 },
         style: {
-            backgroundColor: 'rgba(255, 0, 255, 0.1)',
+            backgroundColor: 'rgba(255, 0, 255, 0.2)',
             height: 100,
             width: 170,
             borderBottomRightRadius: 5,
@@ -47,13 +47,13 @@ export const createAgentStructure =  ( structure, agent: Agent) => {
             type: 'groupNode',
             data: {
                 label: 'llms',
-                backgroundColor:'bg-green-800/10',
+                backgroundColor:'bg-green-800/20',
                 type: 'target',
                 position: Position.Left,},
             resizing: true,
             position: { x: 500, y: 0 },
             style: {
-                backgroundColor: 'rgba(48,89,47,0.2)',
+                backgroundColor: 'rgba(48,89,47,0.3)',
                 height: 50*agent.llms.length + 50,
                 width: 170,
                 borderBottomRightRadius: 5,
@@ -63,11 +63,13 @@ export const createAgentStructure =  ( structure, agent: Agent) => {
         agent.llms.forEach((llm, index:number) => {
             structure.push( {
                 id: llm.llm_uuid,
-                data: { label: llm.llm_name },
+                data: { label: llm.llm_name, type:'llms' , name:llm.llm_name },
                 position: { x: 20, y: 20*(index+1)},
                 parentId: 'group_llms',
                 extent: 'parent',
-                type: 'basicNode'
+                type: 'basicNode',
+                expandParent:true,
+                resizing: true,
             })
         })
     }
@@ -76,13 +78,13 @@ export const createAgentStructure =  ( structure, agent: Agent) => {
             id: 'group_tools',
             type: 'groupNode',
             targetPosition: Position.Top,
-            data: { label: 'tools',backgroundColor: 'bg-orange-500/10',
+            data: { label: 'tools',backgroundColor: 'bg-orange-500/20',
                 type: 'target',
                 position: Position.Left, },
             resizing: true,
             position: { x: 300, y: 200 },
             style: {
-                backgroundColor: 'rgba(248,146,103,0.2)',
+                backgroundColor: 'rgba(248,146,103,0.3)',
                 height: 50*agent.tools.length + 50,
                 width: 170,
                 borderBottomRightRadius: 5,
@@ -92,7 +94,9 @@ export const createAgentStructure =  ( structure, agent: Agent) => {
         agent.tools.forEach((tool, index: number) => {
             structure.push( {
                 id: tool.tool_uuid,
-                data: { label: tool.tool_config.tool_name, type:"tool", fn: tool.tool_name},
+                expandParent:true,
+                resizing: true,
+                data: { label: tool.tool_config.tool_name, type:"tools", name: tool.tool_name},
                 position: { x: 20, y: 20+(50*index) },
                 parentId: 'group_tools',
                 extent: 'parent',

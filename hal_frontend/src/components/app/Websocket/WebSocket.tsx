@@ -24,6 +24,7 @@ const WebSocketCmp = ({ children }: { children: React.ReactNode}) =>{
         socket.onmessage = function(event) {
             // Handle received message
             console.log('onmessage', event)
+            toast(event.data)
         };
 
         socket.onclose = function(event) {

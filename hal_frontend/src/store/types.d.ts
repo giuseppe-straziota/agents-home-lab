@@ -12,6 +12,11 @@ export interface Tool {
     template: object
 }
 
+export interface Llm {
+    name: string,
+    template: object
+}
+
 export interface Agent  {
     name:string,
     active: boolean,
@@ -19,12 +24,14 @@ export interface Agent  {
     llms: Array[{name:string, config: object, uuid: string}],
     tools: Array[{name:string, config: object, uuid: string}],
     uuid: string,
+    description: string
 }
 
 export interface AgentRequest {
     agent_uuid: string|undefined,
     name:string,
     active: boolean,
+    description: string|undefined,
 }
 
 export interface ToolRequest {
@@ -33,6 +40,13 @@ export interface ToolRequest {
     config: { tool_name: string , table: string,
         field: string, action: string},
     tool_uuid: string|undefined,
+}
+
+export interface LlmRequest {
+    agent_uuid: string,
+    llm_name: string,
+    config: { description: string},
+    llm_uuid: string|undefined,
 }
 
 declare module "typesafe-actions" {
@@ -44,6 +58,7 @@ declare module "typesafe-actions" {
 
     export type SettingsModel = Setting[]
     export type ToolsModel = Tool[];
+    export type LlmModel = Llm[];
    // export type Store = StateType<typeof import('./index').default>;
    export type RootState = StateType<ReturnType<typeof import('./root-reducer').default>>;
    // export type RootAction = ActionType<typeof import('./root-action').default>;

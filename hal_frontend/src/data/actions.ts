@@ -1,6 +1,6 @@
-import { createAsyncAction } from 'typesafe-actions';
+import {createAsyncAction, LlmModel} from 'typesafe-actions';
 import {SettingsModel, ToolsModel} from "typesafe-actions";
-import {ToolRequest} from "@/store/types";
+import {LlmRequest, ToolRequest} from "@/store/types";
 
 export const loadSettingsAsync = createAsyncAction(
     'LOAD_SETTINGS_REQUEST',
@@ -8,6 +8,7 @@ export const loadSettingsAsync = createAsyncAction(
     'LOAD_SETTINGS_FAILURE'
 )<undefined, SettingsModel, string>();
 
+//tools actions
 export const loadToolsAsync = createAsyncAction(
     'LOAD_TOOLS_REQUEST',
     'LOAD_TOOLS_SUCCESS',
@@ -25,3 +26,23 @@ export const deleteToolAsync = createAsyncAction(
     'DELETE_TOOL_SUCCESS',
     'DELETE_TOOL_FAILURE'
 )<{tool_uuid:string}, ToolsModel, string>();
+
+//llm actions
+
+export const loadLlmAsync = createAsyncAction(
+    'LOAD_LLM_REQUEST',
+    'LOAD_LLM_SUCCESS',
+    'LOAD_LLM_FAILURE'
+)<undefined, LlmModel, string>();
+
+export const upsertLlmAsync = createAsyncAction(
+    'CREATE_LLM_REQUEST',
+    'CREATE_LLM_SUCCESS',
+    'CREATE_LLM_FAILURE'
+)<LlmRequest, ToolsModel, string>();
+
+export const deleteLlmAsync = createAsyncAction(
+    'DELETE_LLM_REQUEST',
+    'DELETE_LLM_SUCCESS',
+    'DELETE_LLM_FAILURE'
+)<{llm_uuid:string}, ToolsModel, string>();

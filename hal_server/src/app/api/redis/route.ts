@@ -1,4 +1,5 @@
-import redisClient from "@/server/lib/redis";
+
+import redisClient from "../../../server/lib/redis"
 
 export async function GET() {
     try {

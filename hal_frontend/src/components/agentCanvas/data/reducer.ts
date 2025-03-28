@@ -19,6 +19,7 @@ const reducer = combineReducers({
                 console.log('reducer action addAgentAsync', action, state);
                 state.push( {
                     name: action.payload[0].name,
+                    description: action.payload[0].description,
                     active: action.payload[0].active,
                     llms: [],
                     tools: [],

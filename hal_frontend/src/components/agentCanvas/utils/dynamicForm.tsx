@@ -4,11 +4,17 @@ import {Select, SelectContent, SelectGroup, SelectItem, SelectTrigger, SelectVal
 import {Button} from "@/components/ui/button.tsx";
 import {SubmitHandler, useForm} from "react-hook-form";
 import {useDispatch, useSelector} from "react-redux";
-import {AgentsModel, RootState, ToolsModel} from "typesafe-actions";
+import {AgentsModel, LlmModel, RootState, ToolsModel} from "typesafe-actions";
 import {NodeMouseHandler} from "@xyflow/react";
 import {deleteToolAsync, upsertToolAsync} from "@/data/actions.ts";
-import {Dispatch, SetStateAction} from "react";
+import {Dispatch, SetStateAction, useEffect, useState} from "react";
 
+
+interface ConfType {
+    name:string;
+    conf: { [key: string]: { [key: string]: string } };
+    values: object;
+}
 
 export function DynamicForm({node: {value, setOpenSheet}}:
                             {
@@ -21,18 +27,35 @@ export function DynamicForm({node: {value, setOpenSheet}}:
     const listOfAgents: AgentsModel = useSelector<RootState, AgentsModel>((state: RootState) => state.agents.list)
     const selectedAgent: string = useSelector<RootState, string>((state: RootState) => state.agents.selected)
     const tools = useSelector<RootState, ToolsModel>((state: RootState) => state.settings.tools);
+    const llms = useSelector<RootState, LlmModel>((state: RootState) => state.settings.llm);
+    const [selectedConf, setSelectedConf] = useState<ConfType>();
     const {register, handleSubmit, setValue} = useForm()
+    const componentSelected : {[key: string]: ToolsModel|LlmModel} = {
+        'tools': tools,
+        'llms': llms
+    }
 
-    const selectedConf: {[key:string]: {[key:string]:string}} = tools.find(tool => {
-        return tool.name === value!.data.fn
-    })!.template
+
+
     const tool = listOfAgents.find(agent => agent.uuid === selectedAgent)!.tools.find((tool) => tool.tool_uuid === value!.id);
+    const llm = listOfAgents.find(agent => agent.uuid === selectedAgent)!.llms.find((llm) => llm.llm_uuid === value!.id);
+
+    useEffect(() => {
+        const conf: { [key: string]: { [key: string]: string } } = componentSelected[value.data.type].find(tool => {
+            return tool.name === value!.data.name
+        })!.template
+        setSelectedConf({
+            conf: conf,
+            name: value.data.type,
+            values: value.data.type ==='tools'?tool.tool_config:llm.llm_config
+        })
+    }, []);
 
     const onSubmit: SubmitHandler<any> = (data) => {
         dispatch(upsertToolAsync.request({
             tool_uuid: tool.tool_uuid,
             agent_uuid: selectedAgent,
-            fn_name: selectedConf.fn_name,
+            fn_name: selectedConf.name,
             config: {
                 tool_name: data.tool_name ,
                 table: data.table,
@@ -50,17 +73,17 @@ export function DynamicForm({node: {value, setOpenSheet}}:
     }
 
 
-    return (tool &&
+    return (selectedConf &&
         <form onSubmit={handleSubmit(onSubmit)} className="space-y-8">
-            {Object.keys(selectedConf)
+            {Object.keys(selectedConf.conf)
                 .map((key: string) => {
-                    const element = selectedConf[key];
+                    const element = selectedConf.conf[key];
                     if (element.type === 'input') {
                         return (
                             <div
                                 className="grid w-90 max-w-sm items-center gap-1.5 px-4">
                                 <Label htmlFor={key}>{element.label}</Label>
-                                <Input type="text" id={key} defaultValue={tool.tool_config[key]} {...register(key)}/>
+                                <Input  className={'text-zinc-500 mb-2'} type="text" id={key} defaultValue={selectedConf.values[key]} {...register(key)}/>
                             </div>
                         )
                     }
@@ -69,7 +92,7 @@ export function DynamicForm({node: {value, setOpenSheet}}:
                             <div
                                 className="grid w-90 max-w-sm items-center gap-1.5 p-4">
                                 <Label>{'select a ' + element.label}</Label>
-                                <Select defaultValue={tool.tool_config[key]}
+                                <Select defaultValue={selectedConf.values[key]}
                                         onValueChange={(data) => {
                                             console.log(data)
                                             setValue(key, data)

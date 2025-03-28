@@ -1,7 +1,7 @@
 import {useEffect} from "react";
 import {useDispatch, useSelector} from "react-redux";
 import {loadAgentsAsync, selectedAgentAct} from "@/components/agentCanvas/data/agents_actions.ts";
-import {loadSettingsAsync, loadToolsAsync} from "@/data/actions.ts";
+import {loadLlmAsync, loadSettingsAsync, loadToolsAsync} from "@/data/actions.ts";
 import {Toaster} from "sonner";
 import {AgentsModel, RootState} from "typesafe-actions";
 
@@ -15,6 +15,7 @@ export default function Layout({ children }: { children: React.ReactNode}) {
         dispatch(loadAgentsAsync.request());
         dispatch(loadSettingsAsync.request());
         dispatch(loadToolsAsync.request())
+        dispatch(loadLlmAsync.request())
     }, []);
 
     useEffect(() => {

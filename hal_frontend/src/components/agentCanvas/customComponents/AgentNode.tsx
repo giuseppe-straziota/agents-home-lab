@@ -5,7 +5,7 @@ import {BotIcon} from "lucide-react";
 export function AgentNode({data}:NodeTypes) {
 
     return (
-        <div  className={'bg-white p-2 rounded-lg shadow-sm border-1 min-w-40'}>
+        <div  className={'bg-zinc-300 p-2 rounded-lg shadow-sm border-1 min-w-40'}>
             <Handle type="target" position={Position.Left} />
             <div className={' flex flex-col'}>
                 <BotIcon className={'self-end'}/>

@@ -26,6 +26,7 @@ function loadAgents(): Promise<AgentsModel>  {
                         llms: agent.llms,
                         tools: agent.tools,
                         uuid: agent_uuid,
+                        description: agent.description,
                     }
                 }) as AgentsModel)
             });
@@ -41,7 +42,8 @@ function upsertAgent(data: AgentRequest): Promise<AgentsModel>  {
             body: JSON.stringify({
                 agent_uuid: data.agent_uuid,
                 name:data.name,
-                active: data.active
+                active: data.active,
+                description: data.description,
             }),
         })
             .then((res) => {
@@ -51,6 +53,7 @@ function upsertAgent(data: AgentRequest): Promise<AgentsModel>  {
                 console.log('data from api add agent', data);
                 resolve([{
                     name: data.name,
+                    description: data.description,
                     active: data.active,
                     icon: data.active?Bot:BotOff,
                     llms: data.llms,

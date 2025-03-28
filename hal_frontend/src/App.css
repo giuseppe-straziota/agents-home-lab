@@ -1,5 +1,4 @@
 #root {
-  padding: 0.5rem;
   text-align: center;
   height: 98%;
   overflow: hidden;
@@ -39,4 +38,9 @@
 
 .read-the-docs {
   color: #888;
+}
+
+/*this css is here to allow the react flow attribution text to be visible*/
+.react-flow__panel.react-flow__attribution.bottom.left{
+  background: transparent;
 }
