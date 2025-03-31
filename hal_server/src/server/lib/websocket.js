@@ -1,22 +1,40 @@
 import {WebSocketServer} from 'ws'
+import redis from "../lib/redis.js"
+
 let wsServer;
 
 export class GlobalWS {
 
          constructor(){
-            console.log("GlobalWS constructor", wsServer);
+             console.log("call to new GlobalWS constructor");
             if (!wsServer) {
+                console.log("creation on a new Websocket server");
                 wsServer = new WebSocketServer( {port:   3006, path:"/ws"});
                 wsServer.on('connection', (ws) => {
-                    console.log('Nuovo client connesso');
+                    console.log('New client connectiono');
 
                     ws.on('message', (message) => {
-                        console.log(`Messaggio ricevuto: ${JSON.parse(message)}`);
-                        ws.send(`Echo: ${message}`);
+                        const content = JSON.parse(message);
+                        console.log('Messaggio ricevuto:', content);
+                        if (content.channel === 'chat') {
+                            //ws.send(`Echo: ${content.payload}`);
+                            const payload = content.payload;
+                            redis.redisClient.rPush(
+                                payload.agent_uuid,
+                                JSON.stringify({
+                                    sender: "user",
+                                    timestamp: payload.timestamp,
+                                    content: payload.content,
+                                })).then(r => {
+                                console.log(r, 'messages retrived for ', payload.agent_uuid)
+                            });
+
+                        }
+
                     });
 
                     ws.on('close', () => {
-                        console.log('Client disconnesso');
+                        console.log('Client disconnected');
                     });
                 });
                 wsServer.on('error', (err) => {

@@ -20,10 +20,10 @@ app.prepare().then(async () => {
         console.log(`> Ready on http://${process.env.SERVER_HOST}:${process.env.SERVER_PORT}`);
     });
 
+    redisConnect();
     const wsServer = new GlobalWS();
     console.log('wsserver ', wsServer.getInstance())
 
-    redisConnect();
 });
 
 

@@ -1,4 +1,4 @@
-import {dbInteraction} from "../tools/databaseCRUD.js";
+import {dbInteraction} from "./databaseCRUD.js";
 
 
 export const map = {

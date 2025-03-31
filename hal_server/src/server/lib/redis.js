@@ -9,7 +9,11 @@ console.log('redisClient yet connected', redisClient);
 if (!redisClient) {
     redisClient =  createClient();
     redisClient.on('error', (err) => console.error('Redis Client Error', err));
-    redisClient.connect().catch((err) => console.error('Errore connessione Redis:', err));
+    redisClient.connect()
+        .then(c=>{
+            console.log('connected to redis ...',c)
+        })
+        .catch((err) => console.error('Errore connessione Redis:', err));
 
     pubSubClient = redisClient.duplicate();
     pubSubClient.on('error', (err) => console.error('Redis Pub/Sub Client Error:', err));
