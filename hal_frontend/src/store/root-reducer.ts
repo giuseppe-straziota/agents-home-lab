@@ -1,4 +1,4 @@
-import { combineReducers } from 'redux';
+import { combineReducers } from "redux";
 import agentReducer from "@/components/agentCanvas/data/reducer";
 import settingsReducer from "@/data/reducer";
 

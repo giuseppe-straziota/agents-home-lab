@@ -1,12 +1,12 @@
 
-import { combineReducers } from 'redux';
-import {createReducer, LlmModel} from 'typesafe-actions';
-import {SettingsModel,ToolsModel} from 'typesafe-actions'
+import { combineReducers } from "redux";
+import {createReducer, LlmModel} from "typesafe-actions";
+import {SettingsModel,ToolsModel} from "typesafe-actions";
 
 import {
     loadLlmAsync,
     loadSettingsAsync, loadToolsAsync
-} from '../data/actions';
+} from "../data/actions";
 
 const reducer = combineReducers({
     configuration: createReducer([] as SettingsModel)
@@ -15,8 +15,8 @@ const reducer = combineReducers({
                 loadSettingsAsync.success,
             ],
             (state: SettingsModel, action) => {
-                console.log('reducer action', action, state);
-                return action.payload
+                console.log("reducer action", action, state);
+                return action.payload;
             }
         ),
     tools: createReducer([] as ToolsModel)
@@ -25,8 +25,8 @@ const reducer = combineReducers({
                 loadToolsAsync.success,
             ],
             (state: ToolsModel, action) => {
-                console.log('reducer action', action, state);
-                return action.payload
+                console.log("reducer action", action, state);
+                return action.payload;
             }
         ),
     llm: createReducer([] as LlmModel)
@@ -35,8 +35,8 @@ const reducer = combineReducers({
                 loadLlmAsync.success,
             ],
             (state: LlmModel, action) => {
-                console.log('reducer action', action, state);
-                return action.payload
+                console.log("reducer action", action, state);
+                return action.payload;
             }
         )
 

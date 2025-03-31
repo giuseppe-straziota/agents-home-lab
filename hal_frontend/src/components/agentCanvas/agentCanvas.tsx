@@ -7,8 +7,8 @@ import {
     OnNodesChange,
     ReactFlow,
     useEdgesState
-} from '@xyflow/react';
-import '@xyflow/react/dist/style.css';
+} from "@xyflow/react";
+import "@xyflow/react/dist/style.css";
 import {useCallback, useEffect, useMemo, useRef, useState} from "react";
 import {AgentNode} from "./customComponents/AgentNode.tsx";
 import {GroupNode} from "./customComponents/GroupNode.tsx";
@@ -34,72 +34,78 @@ export default function AgentCanvas(){
     const onNodesChange: OnNodesChange = useCallback(
         (changes) =>
         {
-            setNodes((nds) => applyNodeChanges(changes, nds))
-            flowRef.current.fitView({
-                padding: 0.1,
-                includeHiddenNodes: false,
-                minZoom: 0.1,
-                maxZoom: 1,
-                duration: 200,
-                nodes: [{id: 'agent'},{id: 'group_tools'},{id: 'group_llms'},{id: 'group_trigger'}],
-            })
+            setNodes((nds) => applyNodeChanges(changes, nds));
+
         }, [setNodes],
     );
     const [edges, setEdges, onEdgesChange] = useEdgesState([]);
-    const listOfAgents: AgentsModel = useSelector<RootState, AgentsModel>((state: RootState) => state.agents.list)
-    const selectedAgent: string = useSelector<RootState, string>((state: RootState) => state.agents.selected)
+    const listOfAgents: AgentsModel = useSelector<RootState, AgentsModel>((state: RootState) => state.agents.list);
+    const selectedAgent: string = useSelector<RootState, string>((state: RootState) => state.agents.selected);
     const [nodeSelected, setNodeSelected] = useState({});
 
     const getStructure = useCallback((): Node[] => {
     const structure = [] as Node[];
         listOfAgents
             .filter((agent)=> agent.uuid === selectedAgent)
-            .map(createAgentStructure.bind(null, structure))
+            .map(createAgentStructure.bind(null, structure));
 
-    return structure as Node[]
-    },[listOfAgents, selectedAgent])
+    return structure as Node[];
+    },[listOfAgents, selectedAgent]);
 
 
     useEffect(() => {
-        setNodes(getStructure())
+        setNodes(getStructure());
         setEdges(getEdges());
+        if (flowRef.current) {
+            flowRef.current.fitView({
+                padding: 0.1,
+                includeHiddenNodes: false,
+                minZoom: 0.1,
+                maxZoom: 1,
+                duration: 200,
+                nodes: [{id: "agent"}, {id: "group_tools"}, {id: "group_llms"}, {id: "group_trigger"}],
+            });
+        }
+        // eslint-disable-next-line react-hooks/exhaustive-deps
     }, [selectedAgent]);
 
     useEffect(() => {
-        setNodes(getStructure())
+        setNodes(getStructure());
+        // eslint-disable-next-line react-hooks/exhaustive-deps
     }, [listOfAgents]);
 
     return (
-        <div className={'grow h-2/3'}>
+        <div className={"grow h-2/3"}>
             <ReactFlow
 
                 onInit={(instance)=>{
-                flowRef.current = instance
+                flowRef.current = instance;
             }}
                 fitView={true}
 
                 onNodeClick={(event, node)=>{
                     console.log(event,node);
-                    if (node.type !== 'groupNode' && !['chat','agent'].includes(node.id)) {
-                        setOpenSheet(!openSheet)
+                    if (node.type !== "groupNode" && !["chat","agent"].includes(node.id)) {
+                        setOpenSheet(!openSheet);
                         setNodeSelected(node);
                     }
                 }}
+                colorMode={"dark"}
                 onNodesChange={onNodesChange}
                 onEdgesChange={onEdgesChange}
                 nodeTypes={nodeTypes}
                 attributionPosition="bottom-left"
                 nodes={nodes} edges={edges}>
                 <Background   />
-                <Controls position={"top-center"}  orientation={'horizontal'}/>
+                <Controls position={"top-center"}  orientation={"horizontal"}/>
                 <MiniMap pannable={true} zoomable={true} zoomStep={1}
-                   bgColor={'oklch(0.446 0.03 256.802)'}
+                   bgColor={"oklch(0.446 0.03 256.802)"}
                     nodeStrokeColor={(n) => {
-                        if (n.type === 'input') return '#0041d0';
-                        if (n.type === 'selectorNode') return '#c9f1dd';
-                        if (n.type === 'agentNode') return '#addd4e';
+                        if (n.type === "input") return "#0041d0";
+                        if (n.type === "selectorNode") return "#c9f1dd";
+                        if (n.type === "agentNode") return "#addd4e";
 
-                        return '#162318'
+                        return "#162318";
                     }}
 
                     nodeColor={(n) => {
@@ -107,14 +113,14 @@ export default function AgentCanvas(){
                         if (n.style) {
                             return n.style.backgroundColor as string;
                         }
-                        return '#fdc4c4';
+                        return "#fdc4c4";
                     }}
                 />
             </ReactFlow>
             <Sheet open={openSheet} onOpenChange={setOpenSheet} >
-                <SheetContent  className={'bg-zinc-800 mb-2'} >
+                <SheetContent  className={"bg-zinc-800 mb-2 text-zinc-300"} >
                     <SheetHeader>
-                        <SheetTitle>Configure</SheetTitle>
+                        <SheetTitle className={"text-zinc-300"}>Configure</SheetTitle>
                         <SheetDescription>
                         </SheetDescription>
                     </SheetHeader>
@@ -122,5 +128,5 @@ export default function AgentCanvas(){
                 </SheetContent>
             </Sheet>
         </div>
-    )
+    );
 }

@@ -7,31 +7,33 @@ import {AgentsModel, RootState} from "typesafe-actions";
 
 
 export default function Layout({ children }: { children: React.ReactNode}) {
-    const listOfAgents: AgentsModel = useSelector<RootState, AgentsModel>((state: RootState) => state.agents.list)
-    const selectedAgent: string = useSelector<RootState, string>((state: RootState) => state.agents.selected)
+    const listOfAgents: AgentsModel = useSelector<RootState, AgentsModel>((state: RootState) => state.agents.list);
+    const selectedAgent: string = useSelector<RootState, string>((state: RootState) => state.agents.selected);
 
     const dispatch = useDispatch();
     useEffect(() => {
         dispatch(loadAgentsAsync.request());
         dispatch(loadSettingsAsync.request());
-        dispatch(loadToolsAsync.request())
-        dispatch(loadLlmAsync.request())
+        dispatch(loadToolsAsync.request());
+        dispatch(loadLlmAsync.request());
+        // eslint-disable-next-line react-hooks/exhaustive-deps
     }, []);
 
     useEffect(() => {
         if (selectedAgent==="" && listOfAgents.length>0){
-            console.log('update selectedAgent',listOfAgents );
-            dispatch(selectedAgentAct(listOfAgents[0].uuid))
+            console.log("update selectedAgent",listOfAgents );
+            dispatch(selectedAgentAct(listOfAgents[0].uuid));
         }
+        // eslint-disable-next-line react-hooks/exhaustive-deps
     }, [listOfAgents]);
 
     return (
         <>
             <div className="flex h-dvh overflow-auto ">
                 {children}
-                <Toaster/>
+                <Toaster position={"top-right"} theme={"dark"}/>
             </div>
         </>
-    )
+    );
 }
 

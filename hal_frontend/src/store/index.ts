@@ -1,10 +1,10 @@
-import {AgentsModel, RootAction, RootState, SettingsModel, ToolsModel} from 'typesafe-actions';
-import { createStore, applyMiddleware } from 'redux';
-import { createEpicMiddleware } from 'redux-observable';
+import {AgentsModel, RootAction, RootState, SettingsModel, ToolsModel} from "typesafe-actions";
+import { createStore, applyMiddleware } from "redux";
+import { createEpicMiddleware } from "redux-observable";
 
-import { composeEnhancers } from './utils';
-import rootReducer from './root-reducer';
-import rootEpic from './root-epic';
+import { composeEnhancers } from "./utils";
+import rootReducer from "./root-reducer";
+import rootEpic from "./root-epic";
 
 export const epicMiddleware = createEpicMiddleware<
     RootAction,

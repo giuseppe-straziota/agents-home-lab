@@ -1,8 +1,9 @@
 import {useEffect, useState} from "react";
 import {useSelector,useDispatch} from "react-redux";
 import {LlmModel, RootState, ToolsModel} from "typesafe-actions";
-import {Database, Hammer} from "lucide-react";
+import {BrainCircuitIcon, Database, Hammer} from "lucide-react";
 import {Button} from "@/components/ui/button.tsx";
+import {Tooltip, TooltipTrigger, TooltipContent} from "@/components/ui/tooltip.tsx";
 import {Sheet, SheetContent, SheetDescription, SheetHeader, SheetTitle} from "@/components/ui/sheet.tsx";
 import {Llm, Tool} from "@/store/types";
 import {
@@ -17,8 +18,9 @@ import {Input} from "@/components/ui/input.tsx";
 import {Label} from "@/components/ui/label.tsx";
 
 
-import { useForm, SubmitHandler } from "react-hook-form"
+import { useForm, SubmitHandler } from "react-hook-form";
 import {upsertLlmAsync, upsertToolAsync} from "@/data/actions.ts";
+import { Textarea } from "@/components/ui/textarea";
 interface ConfType {
    name:string;
    conf: { [key: string]: { [key: string]: string } }
@@ -31,12 +33,12 @@ export default function RightPanel() {
     const [openSheet, setOpenSheet] = useState<boolean>(false);
     const [actionSelected, setActionSelected] = useState<string | undefined>(undefined);
     const [selectedConf, setSelectedConf] = useState<ConfType>();
-    const selectedAgent: string = useSelector<RootState, string>((state: RootState) => state.agents.selected)
+    const selectedAgent: string = useSelector<RootState, string>((state: RootState) => state.agents.selected);
 
     const componentsList = [{
         title: "LLM",
         id: "llm",
-        icon: Database,
+        icon: BrainCircuitIcon,
         items: llm
     }, {
         title: "Tools",
@@ -48,55 +50,66 @@ export default function RightPanel() {
         id: "store",
         icon: Database,
         items: []
-    }]
+    }];
 
     useEffect(() => {
         if (!openSheet) {
-            setActionSelected(undefined)
-            setSelectedConf(undefined)
+            setActionSelected(undefined);
+            setSelectedConf(undefined);
         }
     }, [openSheet]);
 
-    const { register, handleSubmit, setValue } = useForm()
+    const { register, handleSubmit, setValue } = useForm();
 
-    const onSubmit: SubmitHandler<any> = (data) => {
-        (actionSelected === 'tools') &&
-        dispatch(upsertToolAsync.request({
-            tool_uuid: undefined,
-            agent_uuid: selectedAgent,
-            fn_name: selectedConf!.name,
-            config: { tool_name: data.tool_name , table: data.table,
-                field: data.field, action: data.action}
-        }));
-        (actionSelected === 'llm') &&
-        dispatch(upsertLlmAsync.request({
-            llm_uuid: undefined,
-            agent_uuid: selectedAgent,
-            llm_name: selectedConf!.name,
-            config: {description: data.description}
-        }));
-
-        console.log(selectedAgent, data)
+    const onSubmit: SubmitHandler<React.SyntheticEvent<HTMLFormElement>> = (data:React.SyntheticEvent<HTMLFormElement>) => {
+        switch(actionSelected) {
+            case "tools":
+                dispatch(upsertToolAsync.request({
+                    tool_uuid: undefined,
+                    agent_uuid: selectedAgent,
+                    fn_name: selectedConf!.name,
+                    config: {
+                        tool_name: data.tool_name, table: data.table,
+                        field: data.field, action: data.action
+                   }
+                })); break;
+            case "llm":
+                dispatch(upsertLlmAsync.request({
+                    llm_uuid: undefined,
+                    agent_uuid: selectedAgent,
+                    llm_name: selectedConf!.name,
+                    config: {description: data.description, prompt: data.prompt},
+                })); break;
+            default: break;
+        }
+        console.log(selectedAgent, data);
         setOpenSheet(false);
-    }
+    };
 
     return (
         <>
-        <div className={"w-15 h-dvh  align-center flex flex-col flex-none  bg-zinc-800 gap-3 p-3"}>
+        <div className={"w-15 h-dvh  align-center flex flex-col flex-none  bg-zinc-800 gap-3 py-3"}>
             {componentsList.map((item) => (
-                <Button className={'hover:bg-zinc-700'}
-                    onClick={() => {
-                        setOpenSheet(!openSheet);
-                        setActionSelected(item.id)
-                    }}
-                    variant={'ghost'} key={item.id} title={item.title} >
-                    <item.icon  className={'stroke-gray-500'}/>
-                </Button>
-
+               <Tooltip delayDuration={100}  key={item.id} >
+                   <TooltipContent data-arrow={false}
+                       side={"left"} sideOffset={5}  className={"rounded bg-zinc-700 border-1 border-zinc-600 "}>
+                       <p>{item.title}</p>
+                   </TooltipContent>
+                   <TooltipTrigger asChild>
+                    <Button className={"hover:bg-zinc-700"}
+                        onClick={() => {
+                            setOpenSheet(!openSheet);
+                            setActionSelected(item.id);
+                        }}
+                        variant={"ghost"} key={item.id}   >
+                        <item.icon  className={"stroke-gray-400"}/>
+                    </Button>
+                   </TooltipTrigger>
+               </Tooltip>
             ))}
         </div>
             <Sheet open={openSheet} onOpenChange={setOpenSheet}>
-                <SheetContent  className={'bg-zinc-800 '}>
+                <SheetContent  className={"bg-zinc-800 "}>
                     <SheetHeader>
                         <SheetTitle>{actionSelected}</SheetTitle>
                         <SheetDescription>
@@ -104,21 +117,21 @@ export default function RightPanel() {
                         </SheetDescription>
                     </SheetHeader>
                     <div className="grid w-90 max-w-sm items-center gap-1.5 px-4">
-                            <Label>{'select a ' + actionSelected}</Label>
+                            <Label>{"select a " + actionSelected}</Label>
                             <Select onValueChange={(data) => {
-                                console.log(data)
+                                console.log(data);
                                 const conf: { [key: string]: { [key: string]: string } } =
                                     componentsList
                                         .find(component=>component.id === actionSelected)!.items
                                         .find(
                                             (t) => {
-                                                return t.name === data
+                                                return t.name === data;
                                             }
                                         )!.template;
-                                setSelectedConf({name: data, conf: conf})
+                                setSelectedConf({name: data, conf: conf});
                             }}>
                                 <SelectTrigger className="w-[180px]">
-                                    <SelectValue placeholder={'select a ' + actionSelected}/>
+                                    <SelectValue placeholder={"select a " + actionSelected}/>
                                 </SelectTrigger>
                                 <SelectContent>
                                     <SelectGroup>
@@ -127,7 +140,7 @@ export default function RightPanel() {
                                             (t: Tool | Llm) => {
                                                 return <SelectItem
                                                     value={t.name}>{t.name}
-                                                </SelectItem>
+                                                </SelectItem>;
                                             }
                                         )}
                                     </SelectGroup>
@@ -139,28 +152,37 @@ export default function RightPanel() {
                                          {Object.keys(selectedConf.conf)
                                                 .map((key: string) => {
                                                     const element = selectedConf.conf[key];
-                                                    if (element.type === 'input') {
+                                                    if (element.type === "input") {
                                                         return (
                                                             <div
                                                                 className="grid w-90 max-w-sm items-center gap-1.5 px-4">
                                                                 <Label htmlFor={key}>{element.label}</Label>
                                                                 <Input type="text" id={key} {...register(key)}/>
                                                             </div>
-                                                        )
+                                                        );
                                                     }
-                                                    if (element.type === 'select') {
+                                                    if (element.type === "textarea") {
+                                                        return (
+                                                            <div
+                                                                className="grid w-90 max-w-sm items-center gap-1.5 px-4">
+                                                                <Label htmlFor={key}>{element.label}</Label>
+                                                                <Textarea id={key} {...register(key)}/>
+                                                            </div>
+                                                        );
+                                                    }
+                                                    if (element.type === "select") {
                                                         return (
                                                             <div
                                                                 className="grid w-90 max-w-sm items-center gap-1.5 p-4">
-                                                                <Label>{'select a ' + element.label}</Label>
+                                                                <Label>{"select a " + element.label}</Label>
                                                                 <Select
                                                                     onValueChange={(data) => {
-                                                                        console.log(data)
-                                                                         setValue(key, data)
+                                                                        console.log(data);
+                                                                         setValue(key, data);
                                                                     }}>
                                                                     <SelectTrigger className="w-[180px]">
                                                                         <SelectValue
-                                                                            placeholder={'select a ' + element.label}/>
+                                                                            placeholder={"select a " + element.label}/>
                                                                     </SelectTrigger>
                                                                     <SelectContent>
                                                                         <SelectGroup>
@@ -168,24 +190,24 @@ export default function RightPanel() {
                                                                                 (item) => {
                                                                                     return <SelectItem
                                                                                         value={item}>{item}
-                                                                                    </SelectItem>
+                                                                                    </SelectItem>;
                                                                                 }
                                                                             )}
                                                                         </SelectGroup>
                                                                     </SelectContent>
                                                                 </Select>
                                                             </div>
-                                                        )
+                                                        );
                                                     }
-                                                    return <div key={key}>{key}</div>
+                                                    return <div key={key}>{key}</div>;
                                                 })
                                             }
-                            <Button type="submit" className={'float-right mx-5'}>save</Button>
+                            <Button type="submit" className={"float-right mx-5"}>save</Button>
                         </form>
                     }
                 </SheetContent>
             </Sheet>
         </>
-    )
+    );
 }
 

@@ -1,7 +1,7 @@
-import { combineEpics } from 'redux-observable';
+import { combineEpics } from "redux-observable";
 
-import * as agent from '@/components/agentCanvas/data/epics';
-import * as settings from '../data/epics';
+import * as agent from "@/components/agentCanvas/data/epics";
+import * as settings from "../data/epics";
 
 export default combineEpics(
     ...Object.values(agent),

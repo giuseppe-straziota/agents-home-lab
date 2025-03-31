@@ -1,2 +1,2 @@
-declare module 'cytoscape-sbgn-stylesheet';
+declare module "cytoscape-sbgn-stylesheet";
 

@@ -1,15 +1,15 @@
 
-import { from, of} from 'rxjs';
-import { filter, switchMap, map, catchError} from 'rxjs/operators';
-import { isActionOf } from 'typesafe-actions';
+import { from, of} from "rxjs";
+import { filter, switchMap, map, catchError} from "rxjs/operators";
+import { isActionOf } from "typesafe-actions";
 
 import {
     upsertAgentAsync,
     loadAgentsAsync,
-    deleteAgentAsync
-} from './agents_actions.ts';
-import { RootEpic } from 'typesafe-actions';
-import {upsertAgent, loadAgents, deleteAgent} from "@/components/agentCanvas/data/api_fetch.ts";
+    deleteAgentAsync, loadAgentMsgAsync,
+} from "./agents_actions.ts";
+import { RootEpic } from "typesafe-actions";
+import {upsertAgent, loadAgents, deleteAgent, loadAgentMsg} from "@/components/agentCanvas/data/api_fetch.ts";
 
 export const loadAgentsEpic: RootEpic = (action$) =>
     action$.pipe(
@@ -42,6 +42,17 @@ export const deleteAgentEpic: RootEpic = (action$) =>
                 // map(upsertAgentAsync.success),
                 map(loadAgentsAsync.request),
                 catchError(message => of(deleteAgentAsync.failure(message)))
+            )
+        )
+    );
+
+export const loadAgentMsgEpic: RootEpic = (action$) =>
+    action$.pipe(
+        filter(isActionOf(loadAgentMsgAsync.request)),
+        switchMap((action) =>
+            from(loadAgentMsg(action.payload.agent_uuid)).pipe(
+                map(loadAgentMsgAsync.success),
+                catchError(message => of(loadAgentMsgAsync.failure(message)))
             )
         )
     );
