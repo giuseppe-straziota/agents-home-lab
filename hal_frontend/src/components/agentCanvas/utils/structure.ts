@@ -1,7 +1,12 @@
 import {Position} from "@xyflow/react";
 import {Agent} from "@/store/types";
 
-
+interface Edge {
+    id: string;
+    source: string;
+    type: string;
+    target: string;
+}
 
 export const createAgentStructure =  ( structure, agent: Agent) => {
     structure.push( {
@@ -63,7 +68,7 @@ export const createAgentStructure =  ( structure, agent: Agent) => {
         agent.llms.forEach((llm, index:number) => {
             structure.push( {
                 id: llm.llm_uuid,
-                data: { label: llm.llm_name, type:"llms" , name:llm.llm_name },
+                data: { label: llm.llm_name, type:"llms" ,name: llm.llm_name, uuid: llm.llm_uuid,...llm.llm_config},
                 position: { x: 20, y: 20*(index+1)},
                 parentId: "group_llms",
                 extent: "parent",
@@ -107,7 +112,7 @@ export const createAgentStructure =  ( structure, agent: Agent) => {
 
 };
 
-export const getEdges = ()=>{
+export const getEdges  = ()=>{
     return   [
         {
             id: "agent_chat",
@@ -129,10 +134,5 @@ export const getEdges = ()=>{
             type: "smoothstep",
             target: "group_llms",
         }
-    ] as Array<{
-        id: string;
-        source: string;
-        type: string;
-        target: string;
-    }> ;
+    ] as Edge[]  ;
 };

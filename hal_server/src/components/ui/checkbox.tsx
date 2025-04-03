@@ -4,7 +4,12 @@ import * as React from "react"
 import * as CheckboxPrimitive from "@radix-ui/react-checkbox"
 import { CheckIcon } from "lucide-react"
 
-import { cn } from "@/server/lib/utils"
+import {ClassValue, clsx} from "clsx";
+import {twMerge} from "tailwind-merge";
+
+function cn(...inputs: ClassValue[]) {
+  return twMerge(clsx(inputs))
+}
 
 function Checkbox({
   className,

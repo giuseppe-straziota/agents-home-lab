@@ -69,11 +69,11 @@ export function DynamicForm({node: {value, setOpenSheet}}:
                     }
                 })));
                 break;
-            case "llm":
+            case "llms":
                 dispatch(upsertLlmAsync.request({
                     agent_uuid: selectedAgent,
-                    config: {prompt: data.prompt, description: data.description},
-                    llm_uuid: data.llm_uuid,
+                    config: {prompt: data.prompt, description: data.description, model: data.model},
+                    llm_uuid: llm.llm_uuid,
                     llm_name: selectedConf!.name,
                 }));
                 break;

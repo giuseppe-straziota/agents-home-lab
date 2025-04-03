@@ -5,10 +5,19 @@ import { isActionOf} from "typesafe-actions";
 
 import {
     upsertToolAsync, deleteToolAsync,
-    loadSettingsAsync, loadToolsAsync, loadLlmAsync, upsertLlmAsync, deleteLlmAsync
+    loadSettingsAsync, loadToolsAsync, loadLlmAsync, upsertLlmAsync, deleteLlmAsync, updateSettingsAsync
 } from "./actions";
 import { RootEpic } from "typesafe-actions";
-import {upsertTool, deleteTool, loadConfiguration, loadTools, loadLlm, deleteLlm, upsertLlm} from "@/data/api_fetch.ts";
+import {
+    upsertTool,
+    deleteTool,
+    loadConfiguration,
+    loadTools,
+    loadLlm,
+    deleteLlm,
+    upsertLlm,
+    updateConfiguration
+} from "@/data/api_fetch.ts";
 import {loadAgentsAsync} from "@/components/agentCanvas/data/agents_actions.ts";
 
 
@@ -22,6 +31,18 @@ export const loadSettingsEpic: RootEpic = (action$) =>
             )
         )
     );
+
+export const updateSettingsEpic: RootEpic = (action$) =>
+    action$.pipe(
+        filter(isActionOf(updateSettingsAsync.request)),
+        switchMap((action) =>
+            from(updateConfiguration(action.payload)).pipe(
+                map(loadSettingsAsync.request),
+                catchError(message => of(updateSettingsAsync.failure(message)))
+            )
+        )
+    );
+
 export const loadToolsEpic: RootEpic = (action$) =>
     action$.pipe(
         filter(isActionOf(loadToolsAsync.request)),

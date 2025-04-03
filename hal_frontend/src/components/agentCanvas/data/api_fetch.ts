@@ -51,7 +51,7 @@ function loadAgentMsg(agent_uuid:string): Promise<Message[]>  {
 }
 function upsertAgent(data: AgentRequest): Promise<AgentsModel>  {
     return new Promise((resolve) => {
-        fetch("/api/agents", {
+        fetch("/api/agent", {
             method: "POST",
             headers: {
                 "Content-Type": "application/json",
@@ -60,7 +60,7 @@ function upsertAgent(data: AgentRequest): Promise<AgentsModel>  {
                 agent_uuid: data.agent_uuid,
                 name:data.name,
                 active: data.active,
-                description: data.description,
+                description: data.description
             }),
         })
             .then((res) => {
@@ -82,7 +82,7 @@ function upsertAgent(data: AgentRequest): Promise<AgentsModel>  {
 
 function deleteAgent(data: {agent_uuid:string}): Promise<AgentsModel>  {
     return new Promise((resolve) => {
-        fetch("/api/agents", {
+        fetch("/api/agent", {
             method: "DELETE",
             headers: {
                 "Content-Type": "application/json",

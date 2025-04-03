@@ -1,6 +1,6 @@
-import {openAiClient} from "./openAi.js";
+import sendOpenAiMessage from "./openAi.js";
 
 
-export const llmMap = {
-    'openai': openAiClient
+export const llmManager = {
+    'OpenAI': sendOpenAiMessage
 }

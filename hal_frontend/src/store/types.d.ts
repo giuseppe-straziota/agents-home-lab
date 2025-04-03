@@ -5,8 +5,8 @@ import { Epic } from "redux-observable";
 export interface Setting  {
     name:string,
     value: string,
-    type: string,
-    description: string,
+    type?: string,
+    description?: string,
 }
 
 export interface Tool {
@@ -47,7 +47,7 @@ export interface ToolRequest {
 export interface LlmRequest {
     agent_uuid: string,
     llm_name: string,
-    config: { description: string, prompt: string},
+    config: { description: string, prompt: string, model: string },
     llm_uuid: string|undefined,
 }
 

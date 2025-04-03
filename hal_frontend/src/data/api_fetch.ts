@@ -1,7 +1,7 @@
 import {LlmModel, SettingsModel, ToolsModel} from "typesafe-actions";
 import {LlmRequest, ToolRequest} from "@/store/types";
 
-export {loadTools, loadConfiguration, upsertTool, deleteTool, loadLlm, upsertLlm, deleteLlm};
+export {loadTools, loadConfiguration, upsertTool, deleteTool, loadLlm, upsertLlm, deleteLlm,updateConfiguration};
 
 function loadConfiguration(): Promise<SettingsModel>  {
     return new Promise((resolve) => {
@@ -21,6 +21,27 @@ function loadConfiguration(): Promise<SettingsModel>  {
 
     });
 }
+
+function updateConfiguration(settings : {[key:string]:string|number}): Promise<SettingsModel>  {
+    return new Promise((resolve) => {
+        fetch("/api/configuration", {
+            method: "POST",
+            body: JSON.stringify(settings),
+            headers: {
+                "Content-Type": "application/json",
+            },
+        })
+            .then((res) => {
+                return res.json();
+            })
+            .then((data) => {
+                console.log(data);
+                resolve(data);
+            });
+
+    });
+}
+
 function loadTools(): Promise<ToolsModel>  {
     return new Promise((resolve) => {
         fetch("/api/tool", {

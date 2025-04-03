@@ -28,3 +28,4 @@ export const loadAgentMsgAsync = createAsyncAction(
 
 export const selectedAgentAct = createAction("selected/agent")<string>();
 export const selectedAgentMsgAct = createAction("selected/agent/msg")<Array<Message>>();
+export const setLastAgentMsgAct = createAction("last/agent/msg")<Message>();

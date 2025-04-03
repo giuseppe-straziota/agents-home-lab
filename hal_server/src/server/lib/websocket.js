@@ -1,5 +1,5 @@
 import {WebSocketServer} from 'ws'
-import redis from "../lib/redis.js"
+import {wsChannelManager} from "../lib/utils.js";
 
 let wsServer;
 
@@ -9,28 +9,14 @@ export class GlobalWS {
              console.log("call to new GlobalWS constructor");
             if (!wsServer) {
                 console.log("creation on a new Websocket server");
-                wsServer = new WebSocketServer( {port:   3006, path:"/ws"});
+                wsServer = new WebSocketServer( {port: 3006, path:"/ws"});
                 wsServer.on('connection', (ws) => {
-                    console.log('New client connectiono');
+                    console.log('New client connected');
 
                     ws.on('message', (message) => {
                         const content = JSON.parse(message);
-                        console.log('Messaggio ricevuto:', content);
-                        if (content.channel === 'chat') {
-                            //ws.send(`Echo: ${content.payload}`);
-                            const payload = content.payload;
-                            redis.redisClient.rPush(
-                                payload.agent_uuid,
-                                JSON.stringify({
-                                    sender: "user",
-                                    timestamp: payload.timestamp,
-                                    content: payload.content,
-                                })).then(r => {
-                                console.log(r, 'messages retrived for ', payload.agent_uuid)
-                            });
-
-                        }
-
+                        console.log('Message received:', content);
+                        wsChannelManager(ws, content);
                     });
 
                     ws.on('close', () => {

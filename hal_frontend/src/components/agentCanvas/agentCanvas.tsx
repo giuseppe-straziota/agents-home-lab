@@ -1,7 +1,7 @@
 import {
     applyNodeChanges,
     Background,
-    Controls,
+    Controls, Edge,
     MiniMap,
     Node,
     OnNodesChange,
@@ -38,7 +38,7 @@ export default function AgentCanvas(){
 
         }, [setNodes],
     );
-    const [edges, setEdges, onEdgesChange] = useEdgesState([]);
+    const [edges, setEdges, onEdgesChange] = useEdgesState([] as Edge[]);
     const listOfAgents: AgentsModel = useSelector<RootState, AgentsModel>((state: RootState) => state.agents.list);
     const selectedAgent: string = useSelector<RootState, string>((state: RootState) => state.agents.selected);
     const [nodeSelected, setNodeSelected] = useState({});

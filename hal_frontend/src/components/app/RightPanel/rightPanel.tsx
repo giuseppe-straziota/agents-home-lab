@@ -78,7 +78,7 @@ export default function RightPanel() {
                     llm_uuid: undefined,
                     agent_uuid: selectedAgent,
                     llm_name: selectedConf!.name,
-                    config: {description: data.description, prompt: data.prompt},
+                    config: {description: data.description, prompt: data.prompt, model: data.model},
                 })); break;
             default: break;
         }
@@ -109,15 +109,15 @@ export default function RightPanel() {
             ))}
         </div>
             <Sheet open={openSheet} onOpenChange={setOpenSheet}>
-                <SheetContent  className={"bg-zinc-800 "}>
+                <SheetContent  className={"bg-zinc-800 text-zinc-500"}>
                     <SheetHeader>
-                        <SheetTitle>{actionSelected}</SheetTitle>
+                        <SheetTitle className={"text-zinc-400"}>Add agent's components</SheetTitle>
                         <SheetDescription>
                             Add a new {actionSelected}
                         </SheetDescription>
                     </SheetHeader>
                     <div className="grid w-90 max-w-sm items-center gap-1.5 px-4">
-                            <Label>{"select a " + actionSelected}</Label>
+                            <Label>{"Select a " + actionSelected}</Label>
                             <Select onValueChange={(data) => {
                                 console.log(data);
                                 const conf: { [key: string]: { [key: string]: string } } =

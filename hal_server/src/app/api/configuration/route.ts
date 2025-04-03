@@ -1,4 +1,5 @@
-import pool from "@/server/database/db";
+import pool from "@/server/lib/db";
+import redis from "@/server/lib/redis";
 
 
 export async function GET() {
@@ -18,13 +19,16 @@ export async function GET() {
 export async function POST(request: Request) {
     // Parse the request body
     const body = await request.json();
-    const { name } = body;
-
-    // e.g. Insert new user into your DB
-    const newUser = { id: Date.now(), name };
-
-    return new Response(JSON.stringify(newUser), {
-        status: 201,
+    for (const key of Object.keys(body)) {
+        await pool.query('UPDATE configuration SET value = $1 where name = $2', [String(body[key]), key])
+    }
+    try {
+        await redis.pubSubClient!.publish('info', 'configuration update with success');
+    } catch (error) {
+        console.error('Error publishing message:', error);
+    }
+    return new Response(JSON.stringify({message: 'update done'}), {
+        status: 200,
         headers: { 'Content-Type': 'application/json' }
     });
 }

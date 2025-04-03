@@ -20,6 +20,7 @@ export default function Console() {
     const [input, setInput] = useState("");
     const selectedAgentUuid: string = useSelector<RootState, string>((state: RootState) => state.agents.selected);
     const selectedAgentMsg: Message[] = useSelector<RootState, Message[]>((state: RootState) => state.agents.selectedMsg);
+    const lastAgentMsg: Message = useSelector<RootState, Message>((state: RootState) => state.agents.lastAgentMsg);
     const [waiting, setWaiting] = useState<boolean>(false);
     const viewportRef = useRef<HTMLDivElement>(null);
 
@@ -72,6 +73,14 @@ export default function Console() {
         setMessages([...selectedAgentMsg]);
         scrollToBottom();
     }, [selectedAgentMsg]);
+
+    useEffect(() => {
+        messages.push(lastAgentMsg);
+        setMessages([...messages]);
+        setWaiting(false);
+        scrollToBottom();
+        // eslint-disable-next-line react-hooks/exhaustive-deps
+    }, [lastAgentMsg]);
 
     return (
         <div className="flex-none flex flex-col  grow bg-zinc-900">

@@ -1,4 +1,4 @@
-import pool from "../database/db.js";
+import pool from "../lib/db.js";
 
 export const dbInteraction = async (tableName) => {
 

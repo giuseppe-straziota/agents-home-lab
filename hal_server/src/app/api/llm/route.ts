@@ -1,4 +1,4 @@
-import pool from "@/server/database/db";
+import pool from "@/server/lib/db";
 import {v4 as uuidv4} from "uuid";
 import redis from "@/server/lib/redis"
 
@@ -19,7 +19,7 @@ export async function GET() {
 export async function POST(request: Request) {
     // Parse the request body
     const body = await request.json();
-    console.log(body);
+    console.log('llm post call');
     const {
         agent_uuid,
         llm_name,
@@ -61,14 +61,13 @@ export async function POST(request: Request) {
 export async function DELETE(request: Request) {
     // Parse the request body
     const body = await request.json();
-    console.log(body);
+    console.log('api delete llm');
     const {
         llm_uuid,
     } = body;
     try {
         // const result =await map[fn_name](table)
         const result = await pool.query('DELETE FROM agent_llm WHERE uuid = $1', [llm_uuid]);
-        console.log('delete agent llm',result);
         return new Response(JSON.stringify({rows:result}), {
             status: 200,
             headers: { 'Content-Type': 'application/json' }

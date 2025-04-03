@@ -1,6 +1,6 @@
 import {dbInteraction} from "./databaseCRUD.js";
 
 
-export const map = {
+export const fnMap = {
     'dbInteraction': dbInteraction
 }

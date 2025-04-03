@@ -8,6 +8,12 @@ export const loadSettingsAsync = createAsyncAction(
     "LOAD_SETTINGS_FAILURE"
 )<undefined, SettingsModel, string>();
 
+export const updateSettingsAsync = createAsyncAction(
+    "UPDATE_SETTINGS_REQUEST",
+    "UPDATE_SETTINGS_SUCCESS",
+    "UPDATE_SETTINGS_FAILURE"
+)<{[key:string]: string | number}, SettingsModel, string>();
+
 //tools actions
 export const loadToolsAsync = createAsyncAction(
     "LOAD_TOOLS_REQUEST",

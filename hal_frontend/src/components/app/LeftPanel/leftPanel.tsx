@@ -20,6 +20,7 @@ import {Input} from "@/components/ui/input.tsx";
 import {cn} from "@/lib/utils.ts";
 import {Switch} from "@/components/ui/switch.tsx";
 import {TooltipTrigger, Tooltip, TooltipContent} from "@/components/ui/tooltip.tsx";
+import {updateSettingsAsync} from "@/data/actions.ts";
 
 
 export default function LeftPanel() {
@@ -66,6 +67,10 @@ export default function LeftPanel() {
     };
 
     const {register, handleSubmit, setValue, reset} = useForm<FormAgent>();
+    
+    type FormSetting = {[key: string]: string | number} ;
+
+    const settingFormObj = useForm<FormSetting>();
 
     const upsertAgent: SubmitHandler<FormAgent> = (data) => {
         dispatch(upsertAgentAsync.request({
@@ -83,8 +88,10 @@ export default function LeftPanel() {
         setOpenDialog(false);
     };
 
-    const updateSettings = () => {
-        console.log("upsert settings");
+    const updateSettings: SubmitHandler<FormSetting> = (data) => {
+        console.log("upsert settings", data);
+        dispatch(updateSettingsAsync.request(data));
+        setOpenDialogSetting(false);
     };
 
     const getForm = useMemo(() => {
@@ -202,10 +209,7 @@ export default function LeftPanel() {
             <Dialog open={openDialog} onOpenChange={setOpenDialog} >
                 <DialogContent className="sm:max-w-[425px]  bg-zinc-800">
                     <DialogHeader>
-                        <DialogTitle>Edit profile</DialogTitle>
-                        <DialogDescription>
-                            Make changes to your agent.
-                        </DialogDescription>
+                        <DialogTitle>{isNewAgent?"Create a new Agent":"Edit Agent profile"}</DialogTitle>
                     </DialogHeader>
                     <form onSubmit={handleSubmit(upsertAgent)}>
                         {getForm}
@@ -216,6 +220,7 @@ export default function LeftPanel() {
                     </form>
                 </DialogContent>
             </Dialog>
+
             <Dialog open={openDialogSetting} onOpenChange={setOpenDialogSetting}>
                 <DialogContent className="sm:max-w-[425px]  bg-zinc-800 text-zinc-700">
                     <DialogHeader>
@@ -224,18 +229,19 @@ export default function LeftPanel() {
                             Make changes to your agent.
                         </DialogDescription>
                     </DialogHeader>
-                    <form onSubmit={handleSubmit(updateSettings)}>
+                    <form onSubmit={settingFormObj.handleSubmit(updateSettings)}>
                         {
                             (configuration || []).map((conf: Setting) =>
                                 <div key={conf.name} className={"py-2 "}>
                                     <Label className={"text-zinc-700"}>{conf.description} </Label>
                                     {
-                                       conf.type === "number" && <Input type="number" defaultValue={Number.parseInt(conf.value)}/>
+                                       conf.type === "number" && <Input type="number" {...settingFormObj.register(conf.name)} defaultValue={Number.parseInt(conf.value)}/>
                                     }
                                 </div>
                             )
                         }
                         <DialogFooter className={"p-2 my-3"}>
+                            <Button type="submit">Save changes</Button>
                         </DialogFooter>
                     </form>
                 </DialogContent>

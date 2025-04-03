@@ -5,13 +5,13 @@ import {GlobalWS} from "../lib/websocket.js";
 
 let redisClient;
 let pubSubClient;
-console.log('redisClient yet connected', redisClient);
+console.log('redisClient yet connected', redisClient !== undefined);
 if (!redisClient) {
     redisClient =  createClient();
     redisClient.on('error', (err) => console.error('Redis Client Error', err));
     redisClient.connect()
         .then(c=>{
-            console.log('connected to redis ...',c)
+            console.log('connected to redis ...')
         })
         .catch((err) => console.error('Errore connessione Redis:', err));
 
@@ -19,7 +19,7 @@ if (!redisClient) {
     pubSubClient.on('error', (err) => console.error('Redis Pub/Sub Client Error:', err));
     pubSubClient.connect()
         .then(c=>{
-            console.log('connected to redis pubSubClient...',c)
+            console.log('connected to redis pubSubClient...')
         })
         .catch((err) =>
         console.error('Errore connessione Pub/Sub Redis:', err)
@@ -34,7 +34,7 @@ export function redisConnect() {
     if (!redisClient.isOpen) {
         redisClient
             .connect().then(c => {
-            console.log('connected to redis client...', c)
+            console.log('connected to redis client...')
         });
     }
 
@@ -49,7 +49,7 @@ export function redisConnect() {
         console.log('lib redis info', message);
         ws.clients.forEach((client) => {
             if (client.readyState === WebSocket.OPEN) {
-                client.send(message);
+                client.send(JSON.stringify({info:message}));
             }
         });
     })

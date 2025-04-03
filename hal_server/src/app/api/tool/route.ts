@@ -1,4 +1,4 @@
-import pool from "@/server/database/db";
+import pool from "@/server/lib/db";
 import {v4 as uuidv4} from "uuid";
 import redis from "@/server/lib/redis"
 
@@ -19,7 +19,7 @@ export async function GET() {
 export async function POST(request: Request) {
     // Parse the request body
     const body = await request.json();
-    console.log(body);
+    console.log('api post tool call');
     const {
         agent_uuid,
         fn_name,
@@ -46,7 +46,6 @@ export async function POST(request: Request) {
             console.error('Error publishing message:', error);
         }
 
-        console.log('route tool',result);
         return new Response(JSON.stringify({rows:result}), {
             status: 200,
             headers: { 'Content-Type': 'application/json' }
@@ -60,14 +59,13 @@ export async function POST(request: Request) {
 export async function DELETE(request: Request) {
     // Parse the request body
     const body = await request.json();
-    console.log(body);
+    console.log('delete tool api');
     const {
         tool_uuid,
     } = body;
     try {
         // const result =await map[fn_name](table)
         const result = await pool.query('DELETE FROM agent_tool WHERE uuid = $1', [tool_uuid]);
-        console.log(result);
         return new Response(JSON.stringify({rows:result}), {
             status: 200,
             headers: { 'Content-Type': 'application/json' }
