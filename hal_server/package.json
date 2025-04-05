@@ -5,6 +5,7 @@
   "type": "module",
   "scripts": {
     "dev": "node src/server/server.js",
+    "debug": "node src/server/server.js NODE_OPTIONS='--inspect'",
     "build": "next build",
     "start": "node src/server/server.js",
     "lint": "next lint"

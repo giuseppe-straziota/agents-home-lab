@@ -9,13 +9,9 @@ import {NodeMouseHandler} from "@xyflow/react";
 import {deleteLlmAsync, deleteToolAsync, upsertLlmAsync, upsertToolAsync} from "@/data/actions.ts";
 import {Dispatch, SetStateAction, useEffect, useState} from "react";
 import {Textarea} from "@/components/ui/textarea.tsx";
+import {PlusIcon, TrashIcon} from "lucide-react";
+import {ConfType, Tool} from "@/store/types";
 
-
-interface ConfType {
-    name:string;
-    conf: { [key: string]: { [key: string]: string } };
-    values: object;
-}
 
 export function DynamicForm({node: {value, setOpenSheet}}:
                             {
@@ -30,42 +26,66 @@ export function DynamicForm({node: {value, setOpenSheet}}:
     const tools = useSelector<RootState, ToolsModel>((state: RootState) => state.settings.tools);
     const llms = useSelector<RootState, LlmModel>((state: RootState) => state.settings.llm);
     const [selectedConf, setSelectedConf] = useState<ConfType>();
-    const {register, handleSubmit, setValue} = useForm();
-    const componentSelected : {[key: string]: ToolsModel|LlmModel} = {
+    const {register, handleSubmit, setValue,unregister} = useForm();
+    const componentSelected: { [key: string]: ToolsModel | LlmModel } = {
         "tools": tools,
         "llms": llms
     };
+    const [currentTool, setCurrentTool] = useState<Tool>();
+    const [currentLlm, setCurrentLlm] = useState<LlmModel>();
 
-
-
-    const tool = listOfAgents.find(agent => agent.uuid === selectedAgent)!.tools.find((tool) => tool.tool_uuid === value!.id);
-    const llm = listOfAgents.find(agent => agent.uuid === selectedAgent)!.llms.find((llm) => llm.llm_uuid === value!.id);
+    //const tool = listOfAgents.find(agent => agent.uuid === selectedAgent)!.tools.find((tool) => tool.tool_uuid === value!.id);
+    //const llm = listOfAgents.find(agent => agent.uuid === selectedAgent)!.llms.find((llm) => llm.llm_uuid === value!.id);
 
     useEffect(() => {
+        const tool: Tool = listOfAgents.find(agent => agent.uuid === selectedAgent)!.tools.find((tool) => tool.tool_uuid === value!.id);
+        setCurrentTool(tool);
+        const llm = listOfAgents.find(agent => agent.uuid === selectedAgent)!.llms.find((llm) => llm.llm_uuid === value!.id);
+        setCurrentLlm( llm);
+
+        if (!llm && !tool) return;
         const conf: { [key: string]: { [key: string]: string } } = componentSelected[value.data.type].find(tool => {
             return tool.name === value!.data.name;
         })!.template;
+        let values = {};
+        if (value!.data.type === "tools") {
+            if (tool.tool_config.fields && tool.tool_config.fields.length > 0 && typeof tool.tool_config.fields[0] === "string"){
+                tool.tool_config.fields = tool.tool_config.fields.map(field => {
+                    return {name: field, uuid: "value_"+field};
+                });
+            }
+            if (tool.tool_config.parameters){
+                tool.tool_config.parameters = JSON.stringify(tool.tool_config.parameters);
+            }
+            values = tool.tool_config;
+        } else {
+            values = llm.llm_config;
+        }
         setSelectedConf({
             conf: conf,
             name: value.data.type,
-            values: value.data.type ==="tools"?tool.tool_config:llm.llm_config
+            values: values
         });
         // eslint-disable-next-line react-hooks/exhaustive-deps
     }, []);
 
     const onSubmit: SubmitHandler<any> = (data) => {
-        console.log(data, tool);
+        console.log(data, currentTool);
         switch (value!.data.type) {
             case "tools":
                 (dispatch(upsertToolAsync.request({
-                    tool_uuid: tool.tool_uuid,
+                    tool_uuid: currentTool.tool_uuid,
                     agent_uuid: selectedAgent,
                     fn_name: selectedConf!.name,
                     config: {
                         tool_name: data.tool_name,
                         table: data.table,
-                        field: data.field,
-                        action: data.action
+                        parameters: data.parameters?JSON.parse(data.parameters):undefined,
+                        fields: Object.keys(data)
+                            .filter((key:string)=> key.startsWith("value_"))
+                            .reduce((acc,key) => { acc.push(data[key]); return acc;}, [] ),
+                        action: data.action || currentTool.tool_config.action,
+                        description: data.description
                     }
                 })));
                 break;
@@ -73,7 +93,7 @@ export function DynamicForm({node: {value, setOpenSheet}}:
                 dispatch(upsertLlmAsync.request({
                     agent_uuid: selectedAgent,
                     config: {prompt: data.prompt, description: data.description, model: data.model},
-                    llm_uuid: llm.llm_uuid,
+                    llm_uuid: currentLlm.llm_uuid,
                     llm_name: selectedConf!.name,
                 }));
                 break;
@@ -82,11 +102,11 @@ export function DynamicForm({node: {value, setOpenSheet}}:
         setOpenSheet(false);
     };
 
-    const deleteTool = (event):void => {
+    const deleteTool = (event): void => {
         console.log("deleting", value);
         dispatch(
-            value!.data!.type === "tools"?deleteToolAsync.request({tool_uuid: value!.id}):
-        dispatch(deleteLlmAsync.request({llm_uuid: value!.id})));
+            value!.data!.type === "tools" ? deleteToolAsync.request({tool_uuid: value!.id}) :
+                dispatch(deleteLlmAsync.request({llm_uuid: value!.id})));
 
         setOpenSheet(false);
     };
@@ -102,7 +122,8 @@ export function DynamicForm({node: {value, setOpenSheet}}:
                             <div
                                 className="grid w-90 max-w-sm items-center gap-1.5 px-4">
                                 <Label htmlFor={key}>{element.label}</Label>
-                                <Input  className={"text-zinc-500 mb-2"} type="text" id={key} defaultValue={selectedConf.values[key]} {...register(key)}/>
+                                <Input className={"text-zinc-500 mb-2"} type="text" id={key}
+                                       defaultValue={selectedConf.values[key]} {...register(key)}/>
                             </div>
                         );
                     }
@@ -111,11 +132,61 @@ export function DynamicForm({node: {value, setOpenSheet}}:
                             <div
                                 className="grid w-90 max-w-sm items-center gap-1.5 px-4">
                                 <Label htmlFor={key}>{element.label}</Label>
-                                <Textarea  className={"text-zinc-500 mb-2"}  id={key} defaultValue={selectedConf.values[key]} {...register(key)}/>
+                                <Label>{element.description}</Label>
+                                <Textarea className={"text-zinc-500 mb-2"} id={key} rows={5}
+                                          defaultValue={selectedConf.values[key]} {...register(key)}/>
+                            </div>
+                        );
+                    }
+                    if (element.type === "array") {
+
+                        return (
+                            <div className="grid w-90 max-w-sm items-center gap-1.5 px-4">
+                                <div className={"flex flex-row gap-4"}>
+                                    <Label htmlFor={key}>{element.label}</Label>
+                                    <Button onClick={() => {
+                                        if (selectedConf.values.fields) {
+                                            selectedConf.values.fields.push({
+                                                uuid: "value_" + selectedConf.values.fields.length,
+                                                value: ""
+                                            });
+                                        } else {
+                                            selectedConf.values.fields = [{
+                                                uuid: "value_0",
+                                                value: ""
+                                            }];
+                                        }
+                                        setSelectedConf({...selectedConf});
+                                    }}
+                                            type="button" className={"flex-end"}>
+                                        <PlusIcon/>
+                                    </Button>
+                                </div>
+                                {
+                                    selectedConf.values.fields &&
+                                    selectedConf.values.fields.map((field) => {
+                                        return (<div className={"flex flex-row"}>
+                                            <Input type="text" id={field.uuid} defaultValue={field.name} {...register(field.uuid)} />
+                                            <Button type="button" className={"flex-end"}
+                                                    onClick={() => {
+                                                        selectedConf.values.fields = selectedConf
+                                                            .values.fields.filter(val => {
+                                                                return val.uuid !== field.uuid;
+                                                            });
+                                                        setSelectedConf({...selectedConf});
+                                                        unregister(field.uuid);
+                                                    }
+                                                    }>
+                                                <TrashIcon/>
+                                            </Button>
+                                        </div>);
+                                    })
+                                }
                             </div>
                         );
                     }
                     if (element.type === "select") {
+
                         return (
                             <div
                                 className="grid w-90 max-w-sm items-center gap-1.5 p-4">
@@ -126,14 +197,13 @@ export function DynamicForm({node: {value, setOpenSheet}}:
                                             setValue(key, data);
                                         }}>
                                     <SelectTrigger className="w-[180px]">
-                                        <SelectValue
-                                            placeholder={"select a " + element.label}/>
+                                        <SelectValue placeholder={"select a " + element.label}/>
                                     </SelectTrigger>
-                                    <SelectContent>
+                                    <SelectContent >
                                         <SelectGroup>
                                             {(element.items as string[]).map(
                                                 (item) => {
-                                                    return <SelectItem
+                                                    return <SelectItem key={item}
                                                         value={item}>{item}
                                                     </SelectItem>;
                                                 }

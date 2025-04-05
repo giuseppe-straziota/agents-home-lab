@@ -1,11 +1,11 @@
 import {useEffect, useState} from "react";
 import {useSelector,useDispatch} from "react-redux";
 import {LlmModel, RootState, ToolsModel} from "typesafe-actions";
-import {BrainCircuitIcon, Database, Hammer} from "lucide-react";
+import {BrainCircuitIcon, Database, Hammer, PlusIcon, TrashIcon} from "lucide-react";
 import {Button} from "@/components/ui/button.tsx";
 import {Tooltip, TooltipTrigger, TooltipContent} from "@/components/ui/tooltip.tsx";
 import {Sheet, SheetContent, SheetDescription, SheetHeader, SheetTitle} from "@/components/ui/sheet.tsx";
-import {Llm, Tool} from "@/store/types";
+import {ConfType, Llm, Tool} from "@/store/types";
 import {
     Select,
     SelectContent,
@@ -21,10 +21,7 @@ import {Label} from "@/components/ui/label.tsx";
 import { useForm, SubmitHandler } from "react-hook-form";
 import {upsertLlmAsync, upsertToolAsync} from "@/data/actions.ts";
 import { Textarea } from "@/components/ui/textarea";
-interface ConfType {
-   name:string;
-   conf: { [key: string]: { [key: string]: string } }
-}
+
 
 export default function RightPanel() {
     const dispatch = useDispatch();
@@ -69,8 +66,13 @@ export default function RightPanel() {
                     agent_uuid: selectedAgent,
                     fn_name: selectedConf!.name,
                     config: {
-                        tool_name: data.tool_name, table: data.table,
-                        field: data.field, action: data.action
+                        tool_name: data.tool_name,
+                        table: data.table,
+                        description: data.description,
+                        fields: Object.keys(data)
+                            .filter((key:string)=> key.startsWith("value_"))
+                            .reduce((acc,key) => { acc.push(data[key]); return acc;}, [] ),
+                        action: data.action
                    }
                 })); break;
             case "llm":
@@ -138,8 +140,8 @@ export default function RightPanel() {
                                         {(componentsList
                                             .find(component=>component.id === actionSelected) || {items:[]}).items.map(
                                             (t: Tool | Llm) => {
-                                                return <SelectItem
-                                                    value={t.name}>{t.name}
+                                                return <SelectItem key={t.name}
+                                                    value={t.name}>{t.label}
                                                 </SelectItem>;
                                             }
                                         )}
@@ -167,6 +169,51 @@ export default function RightPanel() {
                                                                 className="grid w-90 max-w-sm items-center gap-1.5 px-4">
                                                                 <Label htmlFor={key}>{element.label}</Label>
                                                                 <Textarea id={key} {...register(key)}/>
+                                                            </div>
+                                                        );
+                                                    }
+                                                    if (element.type === "array") {
+                                                        return (
+                                                            <div className="grid w-90 max-w-sm items-center gap-1.5 px-4">
+                                                                <div className={"flex flex-row gap-4"}> 
+                                                                <Label htmlFor={key}>{element.label}</Label>
+                                                                    <Button onClick={()=>{
+                                                                          if (selectedConf.conf.fields.values) {
+                                                                              selectedConf.conf.fields.values.push({
+                                                                                  uuid:  "value_"+selectedConf.conf.fields.values.length,
+                                                                                  value: ""
+                                                                              });
+                                                                          }else {
+                                                                              selectedConf.conf.fields.values = [{
+                                                                                  uuid: "value_0" ,
+                                                                                  value: ""
+                                                                              }];
+                                                                          }
+                                                                          setSelectedConf({...selectedConf});
+                                                                    }}
+                                                                            type="button" className={"flex-end"}>
+                                                                            <PlusIcon />
+                                                                    </Button>
+                                                                </div>
+                                                                {
+                                                                    selectedConf.conf.fields.values &&
+                                                                    selectedConf.conf.fields.values.map((field)=>{
+                                                                       return (<div className={"flex flex-row"}>
+                                                                            <Input type="text"  id={field.uuid}  defaultValue={field.value} {...register(field.uuid)} />
+                                                                            <Button type="button" className={"flex-end"}
+                                                                               onClick={()=>{
+                                                                                   selectedConf.conf.fields.values = selectedConf.conf.fields
+                                                                                       .values.filter(value=>{
+                                                                                       return  value.uuid !== field.uuid;
+                                                                                   });
+                                                                                   setSelectedConf({...selectedConf});
+                                                                                }
+                                                                               }>
+                                                                                <TrashIcon />
+                                                                            </Button>
+                                                                        </div>);
+                                                                    })
+                                                                }
                                                             </div>
                                                         );
                                                     }

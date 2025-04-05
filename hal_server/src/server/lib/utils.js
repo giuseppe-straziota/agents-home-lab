@@ -5,11 +5,11 @@ export const wsChannelManager = (ws, content) =>{
 
     switch (content.channel) {
         case 'chat':  const payload = content.payload;
-            const agentKey = "agent_"+payload.agent_uuid;
+            const agentKey = "agent_msg_"+payload.agent_uuid;
             redis.redisClient.rPush(
                 agentKey,
                 JSON.stringify({
-                    sender: payload.sender,
+                    role: payload.role,
                     timestamp: payload.timestamp,
                     content: payload.content,
                 })).then(async r => {
@@ -19,7 +19,7 @@ export const wsChannelManager = (ws, content) =>{
                     channel: "chat", payload: {
                         agent_uuid: payload.agent_uuid,
                         content: response,
-                        sender: "assistant",
+                        role: "assistant",
                         timestamp: Date.now(),
                     }
                 }))

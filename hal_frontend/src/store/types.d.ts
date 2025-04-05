@@ -40,10 +40,13 @@ export interface ToolRequest {
     agent_uuid: string,
     fn_name: string,
     config: { tool_name: string , table: string,
-        field: string, action: string},
+        fields: string[], action: string, description: string, parameters?: object },
     tool_uuid: string|undefined,
 }
-
+export interface ConfType {
+    name:string;
+    conf: { [key: string]: { [key: string]: string | string[] | object } }
+}
 export interface LlmRequest {
     agent_uuid: string,
     llm_name: string,
@@ -52,7 +55,7 @@ export interface LlmRequest {
 }
 
 export interface Message {
-    sender: string;
+    role: string;
     content: string;
     timestamp: number;
     agent_uuid: string;

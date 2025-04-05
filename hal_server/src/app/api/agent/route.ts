@@ -5,13 +5,17 @@ import {v4 as uuidv4} from "uuid";
 export async function GET(request: Request) {
     try {
         const params = new URLSearchParams(new URL(request.url).searchParams);
-        const agentUuid: string = "agent_"+params.get('agentUuid') || ""
+        const agentUuid: string = "agent_msg_"+params.get('agentUuid') || ""
         try {
             const redis_max_stored = await pool.query('SELECT value FROM configuration where name = $1',['redis_max_stored'] );
 
             console.log("agent list result_agent messages", agentUuid,redis_max_stored.rows[0].value)
             const result = await redis.redisClient!.lRange(agentUuid, Number.parseInt(redis_max_stored.rows[0].value)*-1, -1);
-                return new Response(JSON.stringify({messages:result.map(msg=>JSON.parse(msg))}), {
+                return new Response(JSON.stringify({messages:
+                        result
+                            .map(msg=>JSON.parse(msg))
+                            .filter(msg=> msg.role==='user' || msg.role === 'assistant')
+                            }), {
                     status: 200,
                     headers: { 'Content-Type': 'application/json' }
                 });

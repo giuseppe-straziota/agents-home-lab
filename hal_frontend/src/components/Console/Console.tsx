@@ -29,7 +29,7 @@ export default function Console() {
         const message: Message = {
             agent_uuid:selectedAgentUuid,
             content: input,
-            sender: "user",
+            role: "user",
             timestamp: Date.now(),
         };
         setMessages([...messages, message]);
@@ -86,9 +86,9 @@ export default function Console() {
         <div className="flex-none flex flex-col  grow bg-zinc-900">
             <ScrollArea className="grow h-30 pb-1"  viewportRef={viewportRef}>
                 {messages.map((msg) => (
-                        <div key={msg.timestamp} className={cn(getMsgPosition(msg.sender),"flex w-full flex-col pl-5 pr-15 ")  }>
-                        {msg.sender !== "user" && <Badge className={"bg-zinc-500 border-1 border-zinc-400"}>{msg.sender}</Badge>}
-                           <Label className=" text-zinc-400 p-3  "> {msg.content}</Label>
+                        <div key={msg.timestamp} className={cn(getMsgPosition(msg.role),"flex w-full flex-col pl-5 pr-15 ")  }>
+                        {msg.role !== "user" && <Badge className={"bg-zinc-500 border-1 border-zinc-400"}>{msg.role}</Badge>}
+                           <Label className=" text-zinc-400 p-3 text-left "> {msg.content}</Label>
                         </div>
                 ))}
                 {waiting && <div className="loader ml-15 my-2"/>}

@@ -1,6 +1,7 @@
-import {dbInteraction} from "./databaseCRUD.js";
+import {retrieveAllDataByTableName, updateDataByTableName} from "./databaseFn.js";
 
 
 export const fnMap = {
-    'dbInteraction': dbInteraction
+    'retrieveAllDataByTableName': retrieveAllDataByTableName,
+    'updateDataByTableName':updateDataByTableName
 }
