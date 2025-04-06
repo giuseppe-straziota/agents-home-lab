@@ -1,7 +1,11 @@
-import { Handle } from "@xyflow/react";
+import {Handle, HandleType, Node, NodeProps, Position} from "@xyflow/react";
 
 
-export function GroupNode({data}) {
+export function GroupNode({data}:NodeProps< Node<{
+    type:HandleType,
+    position: Position,
+    backgroundColor: string,
+    label:string}, "group">>) {
     return (
         <div>
             <Handle type={data.type} position={data.position} />

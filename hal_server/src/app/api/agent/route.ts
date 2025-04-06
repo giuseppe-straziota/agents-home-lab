@@ -1,13 +1,14 @@
 import redis from "@/server/lib/redis";
 import pool from "@/server/lib/db";
 import {v4 as uuidv4} from "uuid";
+import {QueryResultRow} from "pg";
 
 export async function GET(request: Request) {
     try {
         const params = new URLSearchParams(new URL(request.url).searchParams);
         const agentUuid: string = "agent_msg_"+params.get('agentUuid') || ""
         try {
-            const redis_max_stored = await pool.query('SELECT value FROM configuration where name = $1',['redis_max_stored'] );
+            const redis_max_stored: QueryResultRow  = await pool.query('SELECT value FROM configuration where name = $1',['redis_max_stored'] );
 
             console.log("agent list result_agent messages", agentUuid,redis_max_stored.rows[0].value)
             const result = await redis.redisClient!.lRange(agentUuid, Number.parseInt(redis_max_stored.rows[0].value)*-1, -1);
@@ -42,7 +43,7 @@ export async function POST(request: Request) {
     const body = await request.json();
     const { name, agent_uuid, active, description } = body;
     console.log('post agent call')
-    let result;
+    let result :QueryResultRow ;
     if (!agent_uuid){
         result = await pool.query('INSERT INTO agent (name,active, uuid, description) VALUES ($1,$2, $3, $4)  RETURNING uuid', [name, active, uuidv4(), description])
     }else{

@@ -98,18 +98,18 @@ export default function LeftPanel() {
         return (
             <div>
                 <div className={"py-2"}>
-                    <Label className={"text-zinc-500 mb-2"}>Name</Label>
-                    <Input className={"text-zinc-500 mb-2"}
+                    <Label className={"text-zinc-400 mb-2"}>Name</Label>
+                    <Input className={"text-zinc-400 mb-2"}
                            defaultValue={isNewAgent ? "" : currentAgent?.name} id={"name"} {...register("name")}  />
                 </div>
                 <div className={"py-2"}>
-                    <Label className={"text-zinc-500 mb-2"}>Description</Label>
-                    <Input className={"text-zinc-500 mb-2"}
+                    <Label className={"text-zinc-400 mb-2"}>Description</Label>
+                    <Input className={"text-zinc-400 mb-2"}
                            defaultValue={isNewAgent ? "" : currentAgent?.description}
                            id={"name"} {...register("description")}  />
                 </div>
                 <div key={"active"} className={"py-2"}>
-                    <Label className={"text-zinc-500 mb-2"}>At work</Label>
+                    <Label className={"text-zinc-400 mb-2"}>At work</Label>
                     <Switch defaultChecked={isNewAgent ? false : currentAgent?.active}
                             onCheckedChange={(state) => {
                                 setValue("active", state);
@@ -118,8 +118,8 @@ export default function LeftPanel() {
                     />
                 </div>
                 <div key={"uuid"} className={cn(isNewAgent ? "hidden" : "block", "py-2")}>
-                    <Label className={"text-zinc-500 mb-2"}>Uuid</Label>
-                    <Input className={"text-zinc-500 mb-2"} readOnly={true}
+                    <Label className={"text-zinc-400 mb-2"}>Uuid</Label>
+                    <Input className={"text-zinc-400 mb-2"} readOnly={true}
                            value={isNewAgent ? undefined : currentAgent?.uuid}
                            {...register("uuid")}
                            id={"uuid"}/>
@@ -140,7 +140,7 @@ export default function LeftPanel() {
                         <TooltipContent side={"right"} data-arrow={false} sideOffset={13}  className={"rounded bg-zinc-700 border-1 border-zinc-600 "}>
                             <p>Create a new Agent</p>
                         </TooltipContent>
-                        <TooltipTrigger>
+                        <TooltipTrigger asChild>
                             <Button className={"w-6 h-6 relative self-right hover:bg-zinc-700"} variant={"ghost"}
                                     onClick={() => {
                                         setIsNewAgent(!isNewAgent);
@@ -207,7 +207,7 @@ export default function LeftPanel() {
 
 
             <Dialog open={openDialog} onOpenChange={setOpenDialog} >
-                <DialogContent className="sm:max-w-[425px]  bg-zinc-800">
+                <DialogContent className="sm:max-w-[425px]  bg-zinc-800 text-zinc-400">
                     <DialogHeader>
                         <DialogTitle>{isNewAgent?"Create a new Agent":"Edit Agent profile"}</DialogTitle>
                     </DialogHeader>
@@ -222,7 +222,7 @@ export default function LeftPanel() {
             </Dialog>
 
             <Dialog open={openDialogSetting} onOpenChange={setOpenDialogSetting}>
-                <DialogContent className="sm:max-w-[425px]  bg-zinc-800 text-zinc-700">
+                <DialogContent className="sm:max-w-[425px]  bg-zinc-800 text-zinc-400">
                     <DialogHeader>
                         <DialogTitle>Edit profile</DialogTitle>
                         <DialogDescription>
@@ -233,7 +233,7 @@ export default function LeftPanel() {
                         {
                             (configuration || []).map((conf: Setting) =>
                                 <div key={conf.name} className={"py-2 "}>
-                                    <Label className={"text-zinc-700"}>{conf.description} </Label>
+                                    <Label className={"text-zinc-400 mb-2"}>{conf.description} </Label>
                                     {
                                        conf.type === "number" && <Input type="number" {...settingFormObj.register(conf.name)} defaultValue={Number.parseInt(conf.value)}/>
                                     }

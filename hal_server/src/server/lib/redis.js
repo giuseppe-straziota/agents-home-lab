@@ -40,9 +40,6 @@ export function redisConnect() {
 
     redisClient.set('test2', Date.now().toString()).then((data) => {
         console.log('Redis Client Connected');
-        //const value = redisClient.get('test');
-        //console.log('value',value)
-        //clientRedis.disconnect();
     });
 
     pubSubClient.subscribe('info', (message) => {

@@ -1,10 +1,11 @@
 import pool from "@/server/lib/db";
 import {v4 as uuidv4} from "uuid";
 import redis from "@/server/lib/redis"
+import {QueryResultRow} from "pg";
 
 export async function GET() {
     try {
-        const result = await pool.query('SELECT * FROM tool')
+        const result:QueryResultRow = await pool.query('SELECT * FROM tool')
         console.log("tool list call")
         return new Response(JSON.stringify(result.rows), {
             status: 200,
@@ -31,8 +32,8 @@ export async function POST(request: Request) {
        let result;
 
        if (!tool_uuid) {
-           const id_agent = await pool.query('SELECT id FROM agent WHERE uuid = $1', [agent_uuid]);
-           const id_tool = await pool.query('SELECT id FROM tool WHERE name = $1', [fn_name]);
+           const id_agent:QueryResultRow = await pool.query('SELECT id FROM agent WHERE uuid = $1', [agent_uuid]);
+           const id_tool:QueryResultRow = await pool.query('SELECT id FROM tool WHERE name = $1', [fn_name]);
            result = await pool.query(
                'INSERT INTO agent_tool (id_agent,id_tool, uuid, config) VALUES ($1,$2, $3,$4) ', [id_agent.rows[0].id, id_tool.rows[0].id, uuidv4(), config])
         }else{

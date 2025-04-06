@@ -1,4 +1,4 @@
-import {LlmModel, SettingsModel, ToolsModel} from "typesafe-actions";
+import {SettingsModel, TemplateTypeModel} from "typesafe-actions";
 import {LlmRequest, ToolRequest} from "@/store/types";
 
 export {loadTools, loadConfiguration, upsertTool, deleteTool, loadLlm, upsertLlm, deleteLlm,updateConfiguration};
@@ -42,7 +42,7 @@ function updateConfiguration(settings : {[key:string]:string|number}): Promise<S
     });
 }
 
-function loadTools(): Promise<ToolsModel>  {
+function loadTools(): Promise<TemplateTypeModel>  {
     return new Promise((resolve) => {
         fetch("/api/tool", {
             method: "GET",
@@ -61,7 +61,7 @@ function loadTools(): Promise<ToolsModel>  {
     });
 }
 
-function upsertTool(tool: ToolRequest): Promise<ToolsModel>  {
+function upsertTool(tool: ToolRequest): Promise<TemplateTypeModel>  {
     return new Promise((resolve) => {
         fetch("/api/tool", {
             method: "POST",
@@ -83,7 +83,7 @@ function upsertTool(tool: ToolRequest): Promise<ToolsModel>  {
     });
 }
 
-function deleteTool(data: {tool_uuid:string}): Promise<ToolsModel>  {
+function deleteTool(data: {tool_uuid:string}): Promise<TemplateTypeModel>  {
     return new Promise((resolve) => {
         fetch("/api/tool", {
             method: "DELETE",
@@ -104,7 +104,7 @@ function deleteTool(data: {tool_uuid:string}): Promise<ToolsModel>  {
     });
 }
 
-function loadLlm(): Promise<LlmModel>  {
+function loadLlm(): Promise<TemplateTypeModel>  {
     return new Promise((resolve) => {
         fetch("/api/llm", {
             method: "GET",
@@ -124,7 +124,7 @@ function loadLlm(): Promise<LlmModel>  {
 }
 
 
-function upsertLlm(llm: LlmRequest): Promise<ToolsModel>  {
+function upsertLlm(llm: LlmRequest): Promise<TemplateTypeModel>  {
     return new Promise((resolve) => {
         fetch("/api/llm", {
             method: "POST",
@@ -147,7 +147,7 @@ function upsertLlm(llm: LlmRequest): Promise<ToolsModel>  {
 }
 
 
-function deleteLlm(data: {llm_uuid:string}): Promise<ToolsModel>  {
+function deleteLlm(data: {llm_uuid:string}): Promise<TemplateTypeModel>  {
     return new Promise((resolve) => {
         fetch("/api/llm", {
             method: "DELETE",

@@ -9,22 +9,47 @@ export interface Setting  {
     description?: string,
 }
 
-export interface Tool {
-    name: string,
-    template: object
+export interface Template {
+    [key: string]:
+        {
+            [key: string]: string | string[]
+        }
 }
 
-export interface Llm {
+export interface TemplateType {
     name: string,
-    template: object
+    template: Template,
+    label: string
 }
+
+export interface LlmConfig { description:string, model:string,prompt:string }
+export interface ToolConfig {
+    action: string,
+    description: string,
+    fields: string[] | Array<{ value: string; uuid: string;}>,
+    table:string,
+    tool_name:string,
+    parameters?: string
+}
+
+export interface ConfType  {
+    agent_uuid: string,
+    name: string,
+    llm_config?: LlmConfig,
+    llm_name?: string,
+    llm_uuid?: string,
+    tool_config?: ToolConfig,
+    tool_name?: string,
+    tool_uuid?: string,
+}
+
 
 export interface Agent  {
     name:string,
     active: boolean,
     icon:  LucideIcon,
-    llms: Array[{name:string, config: object, uuid: string}],
-    tools: Array[{name:string, config: object, uuid: string}],
+    llms: Array<ConfType>,
+    tools: Array<ConfType>,
     uuid: string,
     description: string
 }
@@ -42,10 +67,6 @@ export interface ToolRequest {
     config: { tool_name: string , table: string,
         fields: string[], action: string, description: string, parameters?: object },
     tool_uuid: string|undefined,
-}
-export interface ConfType {
-    name:string;
-    conf: { [key: string]: { [key: string]: string | string[] | object } }
 }
 export interface LlmRequest {
     agent_uuid: string,
@@ -69,8 +90,9 @@ declare module "typesafe-actions" {
     export type RootAction = ActionType<typeof import("./root-action").default>;
 
     export type SettingsModel = Setting[]
-    export type ToolsModel = Tool[];
-    export type LlmModel = Llm[];
+    export type TemplateTypeModel = TemplateType[];
+    //export type ToolsModel = Tool[];
+    //export type LlmModel = Llm[];
    // export type Store = StateType<typeof import('./index').default>;
    export type RootState = StateType<ReturnType<typeof import("./root-reducer").default>>;
    // export type RootAction = ActionType<typeof import('./root-action').default>;

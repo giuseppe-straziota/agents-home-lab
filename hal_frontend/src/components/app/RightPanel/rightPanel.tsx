@@ -1,11 +1,11 @@
 import {useEffect, useState} from "react";
 import {useSelector,useDispatch} from "react-redux";
-import {LlmModel, RootState, ToolsModel} from "typesafe-actions";
-import {BrainCircuitIcon, Database, Hammer, PlusIcon, TrashIcon} from "lucide-react";
+import {RootState, TemplateTypeModel} from "typesafe-actions";
+import {BrainCircuitIcon, Hammer, PlusIcon, TrashIcon} from "lucide-react";
 import {Button} from "@/components/ui/button.tsx";
 import {Tooltip, TooltipTrigger, TooltipContent} from "@/components/ui/tooltip.tsx";
 import {Sheet, SheetContent, SheetDescription, SheetHeader, SheetTitle} from "@/components/ui/sheet.tsx";
-import {ConfType, Llm, Tool} from "@/store/types";
+import {LlmConfig, LlmRequest, Template, TemplateType, ToolConfig, ToolRequest} from "@/store/types";
 import {
     Select,
     SelectContent,
@@ -18,18 +18,23 @@ import {Input} from "@/components/ui/input.tsx";
 import {Label} from "@/components/ui/label.tsx";
 
 
-import { useForm, SubmitHandler } from "react-hook-form";
+import {FieldValues, useForm} from "react-hook-form";
 import {upsertLlmAsync, upsertToolAsync} from "@/data/actions.ts";
 import { Textarea } from "@/components/ui/textarea";
+import {ScrollArea, ScrollBar} from "@/components/ui/scroll-area";
 
 
 export default function RightPanel() {
     const dispatch = useDispatch();
-    const tools = useSelector<RootState, ToolsModel>((state: RootState) => state.settings.tools);
-    const llm = useSelector<RootState, LlmModel>((state: RootState) => state.settings.llm);
+    const tools = useSelector<RootState, TemplateTypeModel>((state: RootState) => state.settings.tools);
+    const llm = useSelector<RootState, TemplateTypeModel>((state: RootState) => state.settings.llm);
     const [openSheet, setOpenSheet] = useState<boolean>(false);
     const [actionSelected, setActionSelected] = useState<string | undefined>(undefined);
-    const [selectedConf, setSelectedConf] = useState<ConfType>();
+    const [selectedConfRP, setSelectedConfRP] = useState<{
+        conf: Template;
+        name: string;
+        values: LlmConfig | ToolConfig | undefined;
+    }>();
     const selectedAgent: string = useSelector<RootState, string>((state: RootState) => state.agents.selected);
 
     const componentsList = [{
@@ -42,46 +47,42 @@ export default function RightPanel() {
         id: "tools",
         icon: Hammer,
         items: tools
-    }, {
-        title: "Store",
-        id: "store",
-        icon: Database,
-        items: []
-    }];
+    }
+    ];
 
     useEffect(() => {
         if (!openSheet) {
             setActionSelected(undefined);
-            setSelectedConf(undefined);
+            setSelectedConfRP(undefined);
         }
     }, [openSheet]);
 
-    const { register, handleSubmit, setValue } = useForm();
+    const { register, handleSubmit, setValue, reset, unregister } = useForm();
 
-    const onSubmit: SubmitHandler<React.SyntheticEvent<HTMLFormElement>> = (data:React.SyntheticEvent<HTMLFormElement>) => {
+    const onSubmit = (data:FieldValues) => {
         switch(actionSelected) {
             case "tools":
                 dispatch(upsertToolAsync.request({
                     tool_uuid: undefined,
                     agent_uuid: selectedAgent,
-                    fn_name: selectedConf!.name,
+                    fn_name: selectedConfRP!.name as unknown as string,
                     config: {
                         tool_name: data.tool_name,
                         table: data.table,
                         description: data.description,
                         fields: Object.keys(data)
                             .filter((key:string)=> key.startsWith("value_"))
-                            .reduce((acc,key) => { acc.push(data[key]); return acc;}, [] ),
+                            .reduce((acc:Array<string> ,key) => { acc.push(data[key]); return acc;}, [] ),
                         action: data.action
                    }
-                })); break;
+                } as ToolRequest)); break;
             case "llm":
                 dispatch(upsertLlmAsync.request({
                     llm_uuid: undefined,
                     agent_uuid: selectedAgent,
-                    llm_name: selectedConf!.name,
+                    llm_name: selectedConfRP!.name  as unknown as string,
                     config: {description: data.description, prompt: data.prompt, model: data.model},
-                })); break;
+                } as LlmRequest)); break;
             default: break;
         }
         console.log(selectedAgent, data);
@@ -102,6 +103,7 @@ export default function RightPanel() {
                         onClick={() => {
                             setOpenSheet(!openSheet);
                             setActionSelected(item.id);
+                            reset();
                         }}
                         variant={"ghost"} key={item.id}   >
                         <item.icon  className={"stroke-gray-400"}/>
@@ -122,7 +124,7 @@ export default function RightPanel() {
                             <Label>{"Select a " + actionSelected}</Label>
                             <Select onValueChange={(data) => {
                                 console.log(data);
-                                const conf: { [key: string]: { [key: string]: string } } =
+                                const conf:  Template=
                                     componentsList
                                         .find(component=>component.id === actionSelected)!.items
                                         .find(
@@ -130,7 +132,13 @@ export default function RightPanel() {
                                                 return t.name === data;
                                             }
                                         )!.template;
-                                setSelectedConf({name: data, conf: conf});
+                                setSelectedConfRP({name: data, conf: conf, values: {
+                                        action: "",
+                                        description: "",
+                                        fields: [],
+                                        table:"",
+                                        tool_name:"",
+                                    }});
                             }}>
                                 <SelectTrigger className="w-[180px]">
                                     <SelectValue placeholder={"select a " + actionSelected}/>
@@ -139,7 +147,7 @@ export default function RightPanel() {
                                     <SelectGroup>
                                         {(componentsList
                                             .find(component=>component.id === actionSelected) || {items:[]}).items.map(
-                                            (t: Tool | Llm) => {
+                                            (t: TemplateType) => {
                                                 return <SelectItem key={t.name}
                                                     value={t.name}>{t.label}
                                                 </SelectItem>;
@@ -149,11 +157,11 @@ export default function RightPanel() {
                                 </SelectContent>
                             </Select>
                         </div>
-                    {selectedConf &&
+                    {selectedConfRP &&
                         <form  onSubmit={handleSubmit(onSubmit)} className="space-y-8">
-                                         {Object.keys(selectedConf.conf)
+                                         {Object.keys(selectedConfRP.conf)
                                                 .map((key: string) => {
-                                                    const element = selectedConf.conf[key];
+                                                    const element = selectedConfRP.conf[key];
                                                     if (element.type === "input") {
                                                         return (
                                                             <div
@@ -168,48 +176,56 @@ export default function RightPanel() {
                                                             <div
                                                                 className="grid w-90 max-w-sm items-center gap-1.5 px-4">
                                                                 <Label htmlFor={key}>{element.label}</Label>
+                                                                <ScrollArea viewportRef={null}
+                                                                           className="max-h-40 h-40 border-color-white" >
                                                                 <Textarea id={key} {...register(key)}/>
+                                                                    <ScrollBar orientation="horizontal" />
+                                                                </ScrollArea>
                                                             </div>
                                                         );
                                                     }
                                                     if (element.type === "array") {
+                                                        let fieldsList = (selectedConfRP!.values as ToolConfig).fields as Array<{uuid:string, value:string}>;
                                                         return (
                                                             <div className="grid w-90 max-w-sm items-center gap-1.5 px-4">
-                                                                <div className={"flex flex-row gap-4"}> 
+                                                                <div className={"flex flex-row gap-4"}>
                                                                 <Label htmlFor={key}>{element.label}</Label>
-                                                                    <Button onClick={()=>{
-                                                                          if (selectedConf.conf.fields.values) {
-                                                                              selectedConf.conf.fields.values.push({
-                                                                                  uuid:  "value_"+selectedConf.conf.fields.values.length,
-                                                                                  value: ""
-                                                                              });
-                                                                          }else {
-                                                                              selectedConf.conf.fields.values = [{
-                                                                                  uuid: "value_0" ,
-                                                                                  value: ""
-                                                                              }];
-                                                                          }
-                                                                          setSelectedConf({...selectedConf});
-                                                                    }}
-                                                                            type="button" className={"flex-end"}>
-                                                                            <PlusIcon />
+                                                                    <Button className={"w-6 h-6 flex-end relative self-right hover:bg-zinc-700"} variant={"ghost"}
+                                                                         onClick={() => {
+                                                                                if ((selectedConfRP!.values as ToolConfig).fields) {
+                                                                                    fieldsList.push({
+                                                                                        uuid: "value_" + fieldsList.length,
+                                                                                        value: ""
+                                                                                    });
+                                                                                } else {
+                                                                                    fieldsList = [{
+                                                                                        uuid: "value_0",
+                                                                                        value: ""
+                                                                                    }];
+                                                                                }
+                                                                                setSelectedConfRP!({...selectedConfRP});
+                                                                            }}
+                                                                            type="button" >
+                                                                            <PlusIcon className={"stroke-zinc-300"}/>
                                                                     </Button>
                                                                 </div>
+
                                                                 {
-                                                                    selectedConf.conf.fields.values &&
-                                                                    selectedConf.conf.fields.values.map((field)=>{
-                                                                       return (<div className={"flex flex-row"}>
-                                                                            <Input type="text"  id={field.uuid}  defaultValue={field.value} {...register(field.uuid)} />
-                                                                            <Button type="button" className={"flex-end"}
-                                                                               onClick={()=>{
-                                                                                   selectedConf.conf.fields.values = selectedConf.conf.fields
-                                                                                       .values.filter(value=>{
-                                                                                       return  value.uuid !== field.uuid;
-                                                                                   });
-                                                                                   setSelectedConf({...selectedConf});
-                                                                                }
-                                                                               }>
-                                                                                <TrashIcon />
+                                                                    fieldsList &&
+                                                                    fieldsList.map((field) => {
+                                                                        return (<div className={"flex flex-row gap-2 pb-1"}>
+                                                                            <Input type="text" id={field.uuid} defaultValue={field.value} {...register!(field.uuid)} />
+                                                                            <Button type="button" className={"flex-end w-6 h-6 m-1 relative self-right hover:bg-zinc-700"} variant={"ghost"}
+                                                                                    onClick={() => {
+                                                                                        fieldsList = fieldsList.filter(val => {
+                                                                                            return val.uuid !== field.uuid;
+                                                                                        });
+                                                                                        (selectedConfRP!.values as ToolConfig).fields = fieldsList;
+                                                                                        setSelectedConfRP!({...selectedConfRP});
+                                                                                        unregister!(field.uuid);
+                                                                                    }
+                                                                                    }>
+                                                                                <TrashIcon className={"stroke-zinc-300"}/>
                                                                             </Button>
                                                                         </div>);
                                                                     })
@@ -233,8 +249,8 @@ export default function RightPanel() {
                                                                     </SelectTrigger>
                                                                     <SelectContent>
                                                                         <SelectGroup>
-                                                                            {element.items.map(
-                                                                                (item) => {
+                                                                            {(element.items as string[]).map(
+                                                                                (item: string) => {
                                                                                     return <SelectItem
                                                                                         value={item}>{item}
                                                                                     </SelectItem>;
@@ -249,7 +265,7 @@ export default function RightPanel() {
                                                     return <div key={key}>{key}</div>;
                                                 })
                                             }
-                            <Button type="submit" className={"float-right mx-5"}>save</Button>
+                            <Button type="submit" variant={"default"} className={"float-right mx-5"}>save</Button>
                         </form>
                     }
                 </SheetContent>

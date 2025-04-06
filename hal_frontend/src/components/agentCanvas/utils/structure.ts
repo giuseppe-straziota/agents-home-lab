@@ -1,4 +1,4 @@
-import {Position} from "@xyflow/react";
+import {Node, Position} from "@xyflow/react";
 import {Agent} from "@/store/types";
 
 interface Edge {
@@ -8,7 +8,7 @@ interface Edge {
     target: string;
 }
 
-export const createAgentStructure =  ( structure, agent: Agent) => {
+export const createAgentStructure =  ( structure: Node[], agent: Agent) => {
     structure.push( {
         id: "agent",
         type: "agentNode",
@@ -67,7 +67,7 @@ export const createAgentStructure =  ( structure, agent: Agent) => {
         });
         agent.llms.forEach((llm, index:number) => {
             structure.push( {
-                id: llm.llm_uuid,
+                id: llm.llm_uuid as unknown as string,
                 data: { label: llm.llm_name, type:"llms" ,name: llm.llm_name, uuid: llm.llm_uuid,...llm.llm_config},
                 position: { x: 20, y: 20*(index+1)},
                 parentId: "group_llms",
@@ -98,10 +98,10 @@ export const createAgentStructure =  ( structure, agent: Agent) => {
         });
         agent.tools.forEach((tool, index: number) => {
             structure.push( {
-                id: tool.tool_uuid,
+                id: tool.tool_uuid as unknown as string,
                 expandParent:true,
                 resizing: true,
-                data: { label: tool.tool_config.tool_name, type:"tools", name: tool.tool_name},
+                data: { label: tool.tool_config!.tool_name, type:"tools", name: tool.tool_name},
                 position: { x: 20, y: 20+(50*index) },
                 parentId: "group_tools",
                 extent: "parent",

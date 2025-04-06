@@ -1,8 +1,8 @@
-import {Handle, NodeTypes, Position} from "@xyflow/react";
+import {Handle, NodeProps, Node, Position} from "@xyflow/react";
 import {BotIcon} from "lucide-react";
 
 
-export function AgentNode({data}:NodeTypes) {
+export function AgentNode({data}:NodeProps< Node<{label:string}, "label">>) {
 
     return (
         <div  className={"bg-zinc-300 p-2 rounded-lg shadow-sm border-1 min-w-40"}>

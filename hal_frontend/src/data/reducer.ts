@@ -1,7 +1,7 @@
 
 import { combineReducers } from "redux";
-import {createReducer, LlmModel} from "typesafe-actions";
-import {SettingsModel,ToolsModel} from "typesafe-actions";
+import {createReducer} from "typesafe-actions";
+import {SettingsModel,TemplateTypeModel} from "typesafe-actions";
 
 import {
     loadLlmAsync,
@@ -19,22 +19,22 @@ const reducer = combineReducers({
                 return action.payload;
             }
         ),
-    tools: createReducer([] as ToolsModel)
+    tools: createReducer([] as TemplateTypeModel)
         .handleAction(
             [
                 loadToolsAsync.success,
             ],
-            (state: ToolsModel, action) => {
+            (state: TemplateTypeModel, action) => {
                 console.log("reducer action", action, state);
                 return action.payload;
             }
         ),
-    llm: createReducer([] as LlmModel)
+    llm: createReducer([] as TemplateTypeModel)
         .handleAction(
             [
                 loadLlmAsync.success,
             ],
-            (state: LlmModel, action) => {
+            (state: TemplateTypeModel, action) => {
                 console.log("reducer action", action, state);
                 return action.payload;
             }

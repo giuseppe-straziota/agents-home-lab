@@ -67,6 +67,7 @@ export default function Home() {
       setInterval(()=>{
           _checks()
       },30000)
+      // eslint-disable-next-line react-hooks/exhaustive-deps
   },[])
 
   return (

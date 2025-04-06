@@ -8,7 +8,7 @@ import { cn } from "@/lib/utils";
 import { Badge } from "@/components/ui/badge";
 import WSContext from "@/components/app/Websocket/WebsocketContext";
 import {useDispatch, useSelector} from "react-redux";
-import {RootState} from "typesafe-actions";
+import {AgentsModel, RootState} from "typesafe-actions";
 import { Label } from "../ui/label";
 import {Message} from "@/store/types";
 import {loadAgentMsgAsync} from "@/components/agentCanvas/data/agents_actions.ts";
@@ -21,6 +21,8 @@ export default function Console() {
     const selectedAgentUuid: string = useSelector<RootState, string>((state: RootState) => state.agents.selected);
     const selectedAgentMsg: Message[] = useSelector<RootState, Message[]>((state: RootState) => state.agents.selectedMsg);
     const lastAgentMsg: Message = useSelector<RootState, Message>((state: RootState) => state.agents.lastAgentMsg);
+    const listOfAgents: AgentsModel = useSelector<RootState, AgentsModel>((state: RootState) => state.agents.list);
+    const [disableSendMsg, setDisableSendMsg] = useState<boolean>(false);
     const [waiting, setWaiting] = useState<boolean>(false);
     const viewportRef = useRef<HTMLDivElement>(null);
 
@@ -70,6 +72,13 @@ export default function Console() {
     }, [selectedAgentUuid]);
 
     useEffect(() => {
+        const agent =listOfAgents
+            .find((agent)=> agent.uuid === selectedAgentUuid);
+        agent && setDisableSendMsg(!agent!.active);
+        // eslint-disable-next-line react-hooks/exhaustive-deps
+    }, [listOfAgents]);
+
+    useEffect(() => {
         setMessages([...selectedAgentMsg]);
         scrollToBottom();
     }, [selectedAgentMsg]);
@@ -87,7 +96,7 @@ export default function Console() {
             <ScrollArea className="grow h-30 pb-1"  viewportRef={viewportRef}>
                 {messages.map((msg) => (
                         <div key={msg.timestamp} className={cn(getMsgPosition(msg.role),"flex w-full flex-col pl-5 pr-15 ")  }>
-                        {msg.role !== "user" && <Badge className={"bg-zinc-500 border-1 border-zinc-400"}>{msg.role}</Badge>}
+                        {msg.role !== "user" && <Badge  className={"bg-zinc-500 border-1 border-zinc-400"}>{msg.role}</Badge>}
                            <Label className=" text-zinc-400 p-3 text-left "> {msg.content}</Label>
                         </div>
                 ))}
@@ -96,10 +105,13 @@ export default function Console() {
             <div className="flex flex-row text-zinc-300 pb-2 pl-2">
                 <Input className={"bg-zinc-800"}
                     value={input}
+                    disabled={disableSendMsg}
                     onChange={(e) => setInput(e.target.value)}
-                    placeholder="Scrivi un messaggio..."
+                    placeholder={disableSendMsg?"The agent is not available...":"Send a message..."}
                 />
-                <Button onClick={sendMessage} className="mx-2 hover:bg-zinc-800">
+                <Button
+                    disabled={disableSendMsg}
+                    onClick={sendMessage} className="mx-2 hover:bg-zinc-800">
                     <SendHorizonal className="w-4 h-4" />
                 </Button>
             </div>

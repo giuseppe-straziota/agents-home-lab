@@ -5,7 +5,7 @@ import {
     MiniMap,
     Node,
     OnNodesChange,
-    ReactFlow,
+    ReactFlow, ReactFlowInstance,
     useEdgesState
 } from "@xyflow/react";
 import "@xyflow/react/dist/style.css";
@@ -17,11 +17,12 @@ import {Sheet, SheetContent, SheetDescription, SheetHeader, SheetTitle} from "@/
 import {useSelector} from "react-redux";
 import {AgentsModel, RootState} from "typesafe-actions";
 import {createAgentStructure, getEdges} from "@/components/agentCanvas/utils/structure.ts";
-import {DynamicForm} from "@/components/agentCanvas/utils/dynamicForm.tsx";
+import {DynamicFormTool} from "@/components/agentCanvas/utils/form/dynamicFormTool.tsx";
+import {DynamicFormLlm} from "@/components/agentCanvas/utils/form/dynamicFormLlm.tsx";
 
 
 export default function AgentCanvas(){
-    const flowRef = useRef();
+    const flowRef = useRef< ReactFlowInstance<Node, Edge>>(undefined);
     const nodeTypes = useMemo(() => (
         {
             agentNode: AgentNode,
@@ -41,7 +42,7 @@ export default function AgentCanvas(){
     const [edges, setEdges, onEdgesChange] = useEdgesState([] as Edge[]);
     const listOfAgents: AgentsModel = useSelector<RootState, AgentsModel>((state: RootState) => state.agents.list);
     const selectedAgent: string = useSelector<RootState, string>((state: RootState) => state.agents.selected);
-    const [nodeSelected, setNodeSelected] = useState({});
+    const [nodeSelected, setNodeSelected] = useState<Node>();
 
     const getStructure = useCallback((): Node[] => {
     const structure = [] as Node[];
@@ -77,7 +78,6 @@ export default function AgentCanvas(){
     return (
         <div className={"grow h-2/3"}>
             <ReactFlow
-
                 onInit={(instance)=>{
                 flowRef.current = instance;
             }}
@@ -95,7 +95,8 @@ export default function AgentCanvas(){
                 onEdgesChange={onEdgesChange}
                 nodeTypes={nodeTypes}
                 attributionPosition="bottom-left"
-                nodes={nodes} edges={edges}>
+                nodes={nodes}
+                edges={edges}>
                 <Background   />
                 <Controls position={"top-center"}  orientation={"horizontal"}/>
                 <MiniMap pannable={true} zoomable={true} zoomStep={1}
@@ -124,7 +125,8 @@ export default function AgentCanvas(){
                         <SheetDescription>
                         </SheetDescription>
                     </SheetHeader>
-                    <DynamicForm node={{value: nodeSelected, setOpenSheet:setOpenSheet}} />
+                    {nodeSelected && nodeSelected!.data.type === "tools" && <DynamicFormTool value={nodeSelected} setOpenSheet={setOpenSheet}/>}
+                    {nodeSelected && nodeSelected!.data.type === "llms" && <DynamicFormLlm value={nodeSelected} setOpenSheet={setOpenSheet}/>}
                 </SheetContent>
             </Sheet>
         </div>
