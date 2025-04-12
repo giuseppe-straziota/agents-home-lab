@@ -1,8 +1,8 @@
-import { toast } from "sonner";
-import { useEffect } from "react";
+import {toast} from "sonner";
+import {useEffect} from "react";
 import WSContext from "./WebsocketContext";
 import {useDispatch} from "react-redux";
-import {setLastAgentMsgAct} from "@/components/agentCanvas/data/agents_actions.ts";
+import {setLastAgentMsgAct, setProcessingAct} from "@/components/agentCanvas/data/agents_actions.ts";
 
 
 const WebSocketCmp = ({ children }: { children: React.ReactNode}) =>{
@@ -19,17 +19,33 @@ const WebSocketCmp = ({ children }: { children: React.ReactNode}) =>{
         socket.onopen = function(event) {
             // Handle connection open
             console.log("onopen", event);
-            sendWSMessage(JSON.stringify({test: Date.now()}));
-            toast("websocket message sended");
+            toast.info("websocket successfully opened");
         };
 
         socket.onmessage = function(event) {
             // Handle received message
             console.log("onmessage", event);
-            toast(event.data);
             const eventParsed = JSON.parse(event.data);
-            if (eventParsed.channel === "chat"){
-                dispatch(setLastAgentMsgAct(eventParsed.payload));
+            switch (eventParsed.channel) {
+                case "chat": {
+                    dispatch(setLastAgentMsgAct(eventParsed.payload));
+                    dispatch(setProcessingAct(""));
+                    break;
+                }
+                case "info": {
+                    toast.success(eventParsed.payload.content);
+                    break;
+                }
+                case "processing": {
+                    //toast.success(eventParsed.payload);
+                    dispatch(setProcessingAct(eventParsed.payload));
+                    break;
+                }
+                default: {
+                    toast("default " + event.data);
+                    break;
+                }
+
             }
         };
 

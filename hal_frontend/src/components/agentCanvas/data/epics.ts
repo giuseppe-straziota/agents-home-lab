@@ -10,6 +10,7 @@ import {
 } from "./agents_actions.ts";
 import { RootEpic } from "typesafe-actions";
 import {upsertAgent, loadAgents, deleteAgent, loadAgentMsg} from "@/components/agentCanvas/data/api_fetch.ts";
+import {toast} from "sonner";
 
 export const loadAgentsEpic: RootEpic = (action$) =>
     action$.pipe(
@@ -28,7 +29,7 @@ export const addAgentEpic: RootEpic = (action$) =>
         switchMap((action) =>
             from(upsertAgent(action.payload)).pipe(
                 // map(upsertAgentAsync.success),
-                map(loadAgentsAsync.request),
+                map(loadAgentsAsync.request, toast.success("Successfully created")),
                 catchError(message => of(upsertAgentAsync.failure(message)))
             )
         )
@@ -40,7 +41,7 @@ export const deleteAgentEpic: RootEpic = (action$) =>
         switchMap((action) =>
             from(deleteAgent(action.payload)).pipe(
                 // map(upsertAgentAsync.success),
-                map(loadAgentsAsync.request),
+                map(loadAgentsAsync.request, toast.success("Successfully deleted")),
                 catchError(message => of(deleteAgentAsync.failure(message)))
             )
         )

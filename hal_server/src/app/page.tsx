@@ -1,6 +1,7 @@
 'use client'
 import {Checkbox} from "@/components/ui/checkbox";
 import { useEffect, useState} from "react";
+import {HeartBeat} from "@/components/heartbeat/heartBeat";
 interface MonitorType {
     id: string;
     label: string;
@@ -70,12 +71,17 @@ export default function Home() {
       // eslint-disable-next-line react-hooks/exhaustive-deps
   },[])
 
-  return (
-    <div className="grid grid-rows-[20px_1fr_20px] items-center justify-items-center min-h-screen p-8 pb-20 gap-16 sm:p-20 font-[family-name:var(--font-geist-sans)]">
-      <main className="flex flex-col gap-8 row-start-2 items-center sm:items-start">
+  return (<>
+    <div className="grid grid-rows-[20px_1fr_20px] items-center justify-items-center min-h-screen
+             font-[family-name:var(--font-geist-sans)]">
+        <div className={"fixed right float-right bottom-5 p-4"}>Made with <i style={{color: "red"}}>♥</i> by Straziota Giuseppe</div>
+
+        <main className="flex flex-col gap-8 row-start-2 items-center sm:items-start">
+          <>
+           <label>Server status</label>
            {
              systemMonitor.map((field) => (
-                  <div className="items-top flex space-x-2" key={field.id}>
+                  <div className="items-top flex space-x-2 relative" key={field.id}>
                       <Checkbox id={field.id} checked={field.checked}  />
                       <div className="grid gap-1.5 leading-none">
                           <label
@@ -85,15 +91,17 @@ export default function Home() {
                               {field.label}
                           </label>
                           <p className="text-sm text-muted-foreground">
-                             {field.lastCheck?field.lastCheck.toString():'checking...'}
+                              {field.lastCheck ? field.lastCheck.toLocaleString() : 'checking...'}
                           </p>
                       </div>
+                     <HeartBeat  checked={field.checked} />
                   </div>
-              ))
-          }
-
+             ))
+           }
+          </>
       </main>
 
     </div>
-  );
+
+</>);
 }

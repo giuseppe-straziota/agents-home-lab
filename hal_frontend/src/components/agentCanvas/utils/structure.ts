@@ -8,7 +8,7 @@ interface Edge {
     target: string;
 }
 
-export const createAgentStructure =  ( structure: Node[], agent: Agent) => {
+export const createAgentStructure =  ( processing: string|undefined, structure: Node[], agent: Agent) => {
     structure.push( {
         id: "agent",
         type: "agentNode",
@@ -41,7 +41,7 @@ export const createAgentStructure =  ( structure: Node[], agent: Agent) => {
         expandParent:true,
         resizing: true,
         parentId: "group_trigger",
-        data: { label: "chat" },
+        data: { label: "chat" , processing:processing==="chat"},
         position: { x: 20, y: 30 },
         extent: "parent",
         type: "basicNode"
@@ -68,7 +68,7 @@ export const createAgentStructure =  ( structure: Node[], agent: Agent) => {
         agent.llms.forEach((llm, index:number) => {
             structure.push( {
                 id: llm.llm_uuid as unknown as string,
-                data: { label: llm.llm_name, type:"llms" ,name: llm.llm_name, uuid: llm.llm_uuid,...llm.llm_config},
+                data: { processing:processing===llm.llm_uuid,label: llm.llm_name, type:"llms" ,name: llm.llm_name, uuid: llm.llm_uuid,...llm.llm_config},
                 position: { x: 20, y: 20*(index+1)},
                 parentId: "group_llms",
                 extent: "parent",
@@ -101,7 +101,7 @@ export const createAgentStructure =  ( structure: Node[], agent: Agent) => {
                 id: tool.tool_uuid as unknown as string,
                 expandParent:true,
                 resizing: true,
-                data: { label: tool.tool_config!.tool_name, type:"tools", name: tool.tool_name},
+                data: { label: tool.tool_config!.tool_name, type:"tools", name: tool.tool_name, processing:processing===tool.tool_uuid},
                 position: { x: 20, y: 20+(50*index) },
                 parentId: "group_tools",
                 extent: "parent",

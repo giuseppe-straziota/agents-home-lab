@@ -1,17 +1,19 @@
 
 
-import AgentCanvas from "@/components/agentCanvas/agentCanvas.tsx";
+import AgentFlow from "@/components/agentCanvas/agentFlow.tsx";
 
-import {Separator} from "@/components/ui/separator.tsx";
 import Console from "@/components/Console/Console.tsx";
+import {ResizableHandle, ResizablePanel, ResizablePanelGroup} from "@/components/ui/resizable";
 
 
 export default function CenterPanel() {
     return (
-            <div className="flex flex-col grow w-200 bg-zinc-900 p-3 h-full">
-                <AgentCanvas/>
-                <Separator className={"my-4 bg-purple-200 flex-none "}/>
-                <Console />
+            <div className=" grow w-200 bg-zinc-900 p-3 h-full">
+                <ResizablePanelGroup direction="vertical" >
+                    <ResizablePanel  minSize={40}><AgentFlow/></ResizablePanel>
+                    <ResizableHandle withHandle/>
+                    <ResizablePanel > <Console /></ResizablePanel>
+                </ResizablePanelGroup>
             </div>
     );
 }

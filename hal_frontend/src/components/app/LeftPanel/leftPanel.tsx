@@ -76,7 +76,7 @@ export default function LeftPanel() {
         dispatch(upsertAgentAsync.request({
             agent_uuid: isNewAgent ? undefined : currentAgent!.uuid,
             name: data.name,
-            active: data.active,
+            active:   String(data.active) === "on" || String(data.active) === "true",
             description: data.description
         }));
         console.log(selectedAgentUuid, data);
@@ -126,7 +126,7 @@ export default function LeftPanel() {
                 </div>
             </div>
         );
-// eslint-disable-next-line react-hooks/exhaustive-deps
+    // eslint-disable-next-line react-hooks/exhaustive-deps
     }, [currentAgent, isNewAgent]);
 
 

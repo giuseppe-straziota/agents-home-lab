@@ -9,9 +9,10 @@ import { Badge } from "@/components/ui/badge";
 import WSContext from "@/components/app/Websocket/WebsocketContext";
 import {useDispatch, useSelector} from "react-redux";
 import {AgentsModel, RootState} from "typesafe-actions";
-import { Label } from "../ui/label";
 import {Message} from "@/store/types";
-import {loadAgentMsgAsync} from "@/components/agentCanvas/data/agents_actions.ts";
+import {loadAgentMsgAsync, setProcessingAct} from "@/components/agentCanvas/data/agents_actions.ts";
+import MarkdownPreview from "@uiw/react-markdown-preview";
+import {Label} from "@radix-ui/react-dropdown-menu";
 
 export default function Console() {
     const dispatch = useDispatch();
@@ -37,6 +38,7 @@ export default function Console() {
         setMessages([...messages, message]);
         sendWSMessage(JSON.stringify({channel:"chat",payload:message}));
         setInput("");
+        dispatch(setProcessingAct("chat"));
         setWaiting(true);
         scrollToBottom();
     };
@@ -68,12 +70,17 @@ export default function Console() {
         dispatch(loadAgentMsgAsync.request({agent_uuid:selectedAgentUuid}));
         scrollToBottom();
         setWaiting(false);
+        const agent =listOfAgents
+            .find((agent)=> agent.uuid === selectedAgentUuid);
+        // eslint-disable-next-line @typescript-eslint/no-unused-expressions
+        agent && setDisableSendMsg(!agent!.active);
         // eslint-disable-next-line react-hooks/exhaustive-deps
     }, [selectedAgentUuid]);
 
     useEffect(() => {
         const agent =listOfAgents
             .find((agent)=> agent.uuid === selectedAgentUuid);
+        // eslint-disable-next-line @typescript-eslint/no-unused-expressions
         agent && setDisableSendMsg(!agent!.active);
         // eslint-disable-next-line react-hooks/exhaustive-deps
     }, [listOfAgents]);
@@ -92,12 +99,15 @@ export default function Console() {
     }, [lastAgentMsg]);
 
     return (
-        <div className="flex-none flex flex-col  grow bg-zinc-900">
+        <div className=" h-full flex flex-col    bg-zinc-900">
             <ScrollArea className="grow h-30 pb-1"  viewportRef={viewportRef}>
                 {messages.map((msg) => (
                         <div key={msg.timestamp} className={cn(getMsgPosition(msg.role),"flex w-full flex-col pl-5 pr-15 ")  }>
-                        {msg.role !== "user" && <Badge  className={"bg-zinc-500 border-1 border-zinc-400"}>{msg.role}</Badge>}
-                           <Label className=" text-zinc-400 p-3 text-left "> {msg.content}</Label>
+                        {msg.role !== "user" && <Badge  className={"bg-zinc-500 border-1 border-zinc-400"}>
+                          <Label className={"mb-1"}> {msg.role}</Label>
+                        </Badge>}
+                           {/*<Label className=" text-zinc-400 p-3 text-left "> {msg.content}</Label>*/}
+                            <MarkdownPreview style={{background:"oklch(0.21 0.006 285.885)"}} source={msg.content}  className="bg-zinc-900 text-zinc-400 p-3 text-left " />
                         </div>
                 ))}
                 {waiting && <div className="loader ml-15 my-2"/>}
@@ -106,7 +116,9 @@ export default function Console() {
                 <Input className={"bg-zinc-800"}
                     value={input}
                     disabled={disableSendMsg}
-                    onChange={(e) => setInput(e.target.value)}
+                    onChange={(e) => {
+                        setInput(e.target.value);
+                    }}
                     placeholder={disableSendMsg?"The agent is not available...":"Send a message..."}
                 />
                 <Button

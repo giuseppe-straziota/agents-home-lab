@@ -1,12 +1,12 @@
-import pool from "@/server/lib/db";
 import redis from "@/server/lib/redis";
+import prismaClient from "@/server/lib/prisma.js";
 
 
 export async function GET() {
     try {
-        const result = await pool.query('SELECT * FROM configuration')
+        const result = await prismaClient.configuration.findMany({});
         console.log("configuration list call")
-        return new Response(JSON.stringify(result.rows), {
+        return new Response(JSON.stringify(result), {
             status: 200,
             headers: { 'Content-Type': 'application/json' }
         });
@@ -17,13 +17,19 @@ export async function GET() {
 }
 
 export async function POST(request: Request) {
-    // Parse the request body
     const body = await request.json();
     for (const key of Object.keys(body)) {
-        await pool.query('UPDATE configuration SET value = $1 where name = $2', [String(body[key]), key])
+        await prismaClient.configuration.update({
+           where: {
+               name: key,
+           } ,
+            data: {
+               value: String(body[key])
+            }
+        });
     }
     try {
-        await redis.pubSubClient!.publish('info', 'configuration update with success');
+        await redis.publishClient!.publish('info', 'configuration update with success');
     } catch (error) {
         console.error('Error publishing message:', error);
     }

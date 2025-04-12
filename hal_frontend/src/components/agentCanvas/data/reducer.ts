@@ -2,7 +2,7 @@
 import { combineReducers } from "redux";
 import {ActionType, AgentsModel, createReducer} from "typesafe-actions";
 import {
-    loadAgentsAsync, upsertAgentAsync, selectedAgentAct, loadAgentMsgAsync, setLastAgentMsgAct
+    loadAgentsAsync, upsertAgentAsync, selectedAgentAct, loadAgentMsgAsync, setLastAgentMsgAct, setProcessingAct
 } from "./agents_actions.ts";
 import {BotIcon, BotOffIcon} from "lucide-react";
 import {Message} from "@/store/types";
@@ -47,6 +47,13 @@ const reducer = combineReducers({
     lastAgentMsg: createReducer({} as Message)
         .handleAction([setLastAgentMsgAct],
             (state: Message, action: ActionType<typeof setLastAgentMsgAct>): Message => {
+                console.log("reducer action", action, state);
+                return action.payload;
+            }
+        ),
+    processingState: createReducer("")
+        .handleAction([setProcessingAct],
+            (state: string  , action: ActionType<typeof setProcessingAct>): string => {
                 console.log("reducer action", action, state);
                 return action.payload;
             }

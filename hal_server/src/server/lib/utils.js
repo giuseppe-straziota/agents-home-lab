@@ -24,8 +24,6 @@ export const wsChannelManager = (ws, content) =>{
                     }
                 }))
             });
-            //get the conversation <llm limit
-            //call the right llm with params
             break;
         default:    break;
 

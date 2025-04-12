@@ -24,7 +24,7 @@ export function DynamicFormTool({value, setOpenSheet}:
         conf: Template,
         name: string,
         values: ToolConfig | LlmConfig
-    }| undefined>();
+    } | undefined>();
     const {register, handleSubmit, setValue, unregister} = useForm();
     const componentSelected: { [key: string]: TemplateTypeModel } = {
         "tools": tools,
@@ -43,17 +43,17 @@ export function DynamicFormTool({value, setOpenSheet}:
             if (tool && value!.data.type === "tools") {
                 //here the string array is transformed into am array of uuid/value
                 if (tool.tool_config.fields && tool.tool_config.fields.length > 0 && typeof tool.tool_config.fields[0] === "string") {
-                    tool.tool_config.fields  = tool.tool_config.fields
-                        .map((field: string | { value: string; uuid: string;} ) => {
-                        return {value: field, uuid: "value_" + field};
-                    }) as Array<{ value: string; uuid: string; }>;
+                    tool.tool_config.fields = tool.tool_config.fields
+                        .map((field: string | { value: string; uuid: string; }) => {
+                            return {value: field, uuid: "value_" + field};
+                        }) as Array<{ value: string; uuid: string; }>;
                 }
-                if (tool.tool_config.parameters && typeof tool.tool_config.parameters === "object" ) {
+                if (tool.tool_config.parameters && typeof tool.tool_config.parameters === "object") {
                     tool.tool_config.parameters = JSON.stringify(tool.tool_config.parameters);
                 }
                 setSelectedConf({
                     conf: conf,
-                    name: value!.data.type as unknown as string,
+                    name: value!.data.name as unknown as string,
                     values: tool.tool_config
                 });
             }
@@ -62,7 +62,7 @@ export function DynamicFormTool({value, setOpenSheet}:
         // eslint-disable-next-line react-hooks/exhaustive-deps
     }, []);
 
-    const onSubmit = (data:FieldValues) => {
+    const onSubmit = (data: FieldValues) => {
         console.log(data, currentTool);
         dispatch(upsertToolAsync.request(
             {
@@ -71,7 +71,7 @@ export function DynamicFormTool({value, setOpenSheet}:
                 fn_name: selectedConf!.name,
                 config: {
                     tool_name: data.tool_name,
-                    table: data.table,
+                    table: data.table || currentTool!.tool_config!.table,
                     parameters: data.parameters ? JSON.parse(data.parameters) : undefined,
                     fields: Object.keys(data)
                         .filter((key: string) => key.startsWith("value_"))
@@ -79,7 +79,6 @@ export function DynamicFormTool({value, setOpenSheet}:
                             acc.push(data[key]);
                             return acc;
                         }, []),
-                    action: data.action || currentTool!.tool_config!.action,
                     description: data.description
                 }
             }
@@ -88,37 +87,45 @@ export function DynamicFormTool({value, setOpenSheet}:
     };
 
     const deleteTool = (): void => {
-        console.log("deleting", value);
-        dispatch(deleteToolAsync.request({tool_uuid: value!.id}));
+        console.log("deleting", value, currentTool);
+        dispatch(deleteToolAsync.request({
+            tool_uuid: value!.id,
+            agent_uuid: currentTool!.agent_uuid,
+            tool_name: currentTool!.tool_name!
+        }));
         setOpenSheet(false);
     };
 
-    return (selectedConf &&
-        <form onSubmit={handleSubmit(onSubmit)} className="space-y-8">
-            {Object.keys(selectedConf.conf)
-                .map((key: string) => {
-                    return (
-                        <DynamicFormContext.Provider value={{
-                            selectedConf,
-                            setSelectedConf,
-                            register,
-                            setValue,
-                            unregister
-                        }}>
-                            <ComponentManager
-                                element={selectedConf.conf}
-                                mapKey={key}/>
-                        </DynamicFormContext.Provider>
-                    );
-                })
-            }
-            <div className={"flex flex-row gap-2 justify-end mr-2"}>
-                <Button type="button" onClick={deleteTool} className={"mx-1"}>delete</Button>
-                <Button type="submit" className={"mx-1"}>update</Button>
-                <Button type="button" onClick={() => {
-                    setOpenSheet(false);
-                }} className={"mx-1"}>close</Button>
-            </div>
-        </form>
+    return (selectedConf && (
+            <DynamicFormContext.Provider value={{
+                selectedConf,
+                setSelectedConf,
+                register,
+                setValue,
+                unregister
+            }}>
+                <form onSubmit={handleSubmit(onSubmit)} className="space-y-8">
+                    {Object.keys(selectedConf.conf)
+                        .map((key: string) => {
+                            return (
+
+                                <ComponentManager
+                                    key={key}
+                                    element={selectedConf.conf}
+                                    mapKey={key}/>
+                            );
+                        })
+                    }
+                    <div className={"flex flex-row gap-2 justify-end mr-2"}>
+                        <Button type="button" onClick={deleteTool} className={"mx-1"}>delete</Button>
+                        <Button type="submit" className={"mx-1"}>update</Button>
+                        <Button type="button" onClick={() => {
+                            setOpenSheet(false);
+                        }} className={"mx-1"}>close</Button>
+                    </div>
+                </form>
+            </DynamicFormContext.Provider>
+        )
+
     );
 }

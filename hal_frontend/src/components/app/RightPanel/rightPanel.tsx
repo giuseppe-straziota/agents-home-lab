@@ -21,7 +21,6 @@ import {Label} from "@/components/ui/label.tsx";
 import {FieldValues, useForm} from "react-hook-form";
 import {upsertLlmAsync, upsertToolAsync} from "@/data/actions.ts";
 import { Textarea } from "@/components/ui/textarea";
-import {ScrollArea, ScrollBar} from "@/components/ui/scroll-area";
 
 
 export default function RightPanel() {
@@ -113,7 +112,7 @@ export default function RightPanel() {
             ))}
         </div>
             <Sheet open={openSheet} onOpenChange={setOpenSheet}>
-                <SheetContent  className={"bg-zinc-800 text-zinc-500"}>
+                <SheetContent  className={"bg-zinc-800 text-zinc-500  overflow-y-auto overflow-x-none"}>
                     <SheetHeader>
                         <SheetTitle className={"text-zinc-400"}>Add agent's components</SheetTitle>
                         <SheetDescription>
@@ -158,7 +157,7 @@ export default function RightPanel() {
                             </Select>
                         </div>
                     {selectedConfRP &&
-                        <form  onSubmit={handleSubmit(onSubmit)} className="space-y-8">
+                        <form  onSubmit={handleSubmit(onSubmit)} className="space-y-8  ">
                                          {Object.keys(selectedConfRP.conf)
                                                 .map((key: string) => {
                                                     const element = selectedConfRP.conf[key];
@@ -173,14 +172,9 @@ export default function RightPanel() {
                                                     }
                                                     if (element.type === "textarea") {
                                                         return (
-                                                            <div
-                                                                className="grid w-90 max-w-sm items-center gap-1.5 px-4">
+                                                            <div className="grid w-90 max-w-sm items-center gap-1.5 px-4">
                                                                 <Label htmlFor={key}>{element.label}</Label>
-                                                                <ScrollArea viewportRef={null}
-                                                                           className="max-h-40 h-40 border-color-white" >
-                                                                <Textarea id={key} {...register(key)}/>
-                                                                    <ScrollBar orientation="horizontal" />
-                                                                </ScrollArea>
+                                                                <Textarea id={key}  className={"text-zinc-500 mb-2"} {...register(key)}/>
                                                             </div>
                                                         );
                                                     }

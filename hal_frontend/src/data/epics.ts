@@ -19,6 +19,7 @@ import {
     updateConfiguration
 } from "@/data/api_fetch.ts";
 import {loadAgentsAsync} from "@/components/agentCanvas/data/agents_actions.ts";
+import {toast} from "sonner";
 
 
 export const loadSettingsEpic: RootEpic = (action$) =>
@@ -37,7 +38,7 @@ export const updateSettingsEpic: RootEpic = (action$) =>
         filter(isActionOf(updateSettingsAsync.request)),
         switchMap((action) =>
             from(updateConfiguration(action.payload)).pipe(
-                map(loadSettingsAsync.request),
+                map(loadSettingsAsync.request, toast.success("Settings successfully updated")),
                 catchError(message => of(updateSettingsAsync.failure(message)))
             )
         )
@@ -59,7 +60,7 @@ export const upsertToolEpic: RootEpic = (action$) =>
         filter(isActionOf(upsertToolAsync.request)),
         switchMap((action) =>
             from(upsertTool(action.payload)).pipe(
-                map(loadAgentsAsync.request),
+                map(loadAgentsAsync.request, toast.success("Successfully ".concat(action.payload.tool_uuid?"updated":"created"))),
                 catchError(message => of(upsertToolAsync.failure(message)))
             )
         )
@@ -70,7 +71,7 @@ export const deleteToolEpic: RootEpic = (action$) =>
         filter(isActionOf(deleteToolAsync.request)),
         switchMap((action) =>
             from(deleteTool(action.payload)).pipe(
-                map(loadAgentsAsync.request),
+                map(loadAgentsAsync.request, toast.success("Successfully deleted")),
                 catchError(message => of(deleteToolAsync.failure(message)))
             )
         )
@@ -92,7 +93,7 @@ export const upsertLlmlEpic: RootEpic = (action$) =>
         filter(isActionOf(upsertLlmAsync.request)),
         switchMap((action) =>
             from(upsertLlm(action.payload)).pipe(
-                map(loadAgentsAsync.request),
+                map(loadAgentsAsync.request, toast.success("Successfully ".concat(action.payload.llm_uuid?"updated":"created"))),
                 catchError(message => of(upsertLlmAsync.failure(message)))
             )
         )
@@ -103,7 +104,7 @@ export const deleteLlmEpic: RootEpic = (action$) =>
         filter(isActionOf(deleteLlmAsync.request)),
         switchMap((action) =>
             from(deleteLlm(action.payload)).pipe(
-                map(loadAgentsAsync.request),
+                map(loadAgentsAsync.request, toast.success("Successfully deleted ")),
                 catchError(message => of(deleteLlmAsync.failure(message)))
             )
         )

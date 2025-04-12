@@ -20,7 +20,7 @@ const enhancer = composeEnhancers(applyMiddleware(...middlewares));
 
 // rehydrate state on app start
 const initialState : RootState= {
-    agents: {list: [] as AgentsModel, selected: "", lastAgentMsg: {} as Message, selectedMsg: [] },
+    agents: {list: [] as AgentsModel, selected: "", lastAgentMsg: {} as Message, selectedMsg: [], processingState: "" },
     settings: {configuration: [] as SettingsModel, tools: [] as TemplateTypeModel , llm: [] as TemplateTypeModel}
 };
 

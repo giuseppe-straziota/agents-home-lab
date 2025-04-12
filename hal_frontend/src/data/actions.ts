@@ -31,7 +31,7 @@ export const deleteToolAsync = createAsyncAction(
     "DELETE_TOOL_REQUEST",
     "DELETE_TOOL_SUCCESS",
     "DELETE_TOOL_FAILURE"
-)<{tool_uuid:string}, TemplateTypeModel, string>();
+)<{tool_uuid:string, agent_uuid:string, tool_name:string}, TemplateTypeModel, string>();
 
 //llm actions
 
@@ -51,4 +51,6 @@ export const deleteLlmAsync = createAsyncAction(
     "DELETE_LLM_REQUEST",
     "DELETE_LLM_SUCCESS",
     "DELETE_LLM_FAILURE"
-)<{llm_uuid:string}, TemplateTypeModel, string>();
+)<{llm_uuid:string,
+    agent_uuid:string,
+    llm_name:string}, TemplateTypeModel, string>();

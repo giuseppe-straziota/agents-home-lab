@@ -60,3 +60,38 @@
   50%  {box-shadow: 15px 0 0 2px, 30px 0 0 4px, 45px 0 0 2px}
   100% {box-shadow: 15px 0 0 0  , 30px 0 0 2px, 45px 0 0 4px}
 }
+
+.blurContent {
+  animation: moveToTopLeft 4s forwards;
+}
+
+.blurContentSvg {
+  animation: scaleToTopLeft 4s forwards;
+}
+
+@keyframes moveToTopLeft {
+  from {
+    left: 0;
+    top: 0;
+    transform: translate(0, 0);
+
+  }
+  to {
+    left: 6.3em;
+    top:  4.3em;
+    transform: translate(calc(-50% + 6.3em),calc(-50% + 4.3em));
+
+  }
+}
+@keyframes scaleToTopLeft {
+  from {
+      width: 500px;
+      opacity: 1;
+      stroke: oklch(0.889 0.061 308.703);
+  }
+  to {
+      width: 100px;
+      opacity: 0.2;
+      stroke: oklch(0.95 0.052 163.051);
+  }
+}

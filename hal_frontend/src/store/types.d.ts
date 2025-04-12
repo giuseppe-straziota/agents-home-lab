@@ -65,7 +65,7 @@ export interface ToolRequest {
     agent_uuid: string,
     fn_name: string,
     config: { tool_name: string , table: string,
-        fields: string[], action: string, description: string, parameters?: object },
+        fields: string[], description: string, parameters?: object },
     tool_uuid: string|undefined,
 }
 export interface LlmRequest {

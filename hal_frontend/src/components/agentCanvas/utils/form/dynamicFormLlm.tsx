@@ -44,7 +44,7 @@ export function DynamicFormLlm({value, setOpenSheet}:
 
             setSelectedConf({
                 conf: conf,
-                name: value!.data.type as unknown as string,
+                name: value!.data.name as unknown as string,
                 values:  llm.llm_config
             });
         }
@@ -63,28 +63,28 @@ export function DynamicFormLlm({value, setOpenSheet}:
     };
 
     const deleteTool = (): void => {
-        console.log("deleting", value);
-         dispatch(deleteLlmAsync.request({llm_uuid: value!.id}));
+        console.log("deleting", value, currentLlm);
+         dispatch(deleteLlmAsync.request({llm_uuid: value!.id, agent_uuid: selectedAgent, llm_name: selectedConf!.name}));
         setOpenSheet(false);
     };
 
 
-    return (selectedConf &&
+    return (selectedConf && (
+        <DynamicFormContext.Provider value={{
+            selectedConf,
+            setSelectedConf,
+            register,
+            setValue,
+            unregister
+        }}>
         <form onSubmit={handleSubmit(onSubmit)} className="space-y-8">
             {Object.keys(selectedConf.conf)
                 .map((key: string) => {
                     return (
-                        <DynamicFormContext.Provider value={{
-                            selectedConf,
-                            setSelectedConf,
-                            register,
-                            setValue,
-                            unregister
-                        }}>
                             <ComponentManager
+                                key={key}
                                 element={selectedConf.conf}
                                 mapKey={key}   />
-                        </DynamicFormContext.Provider>
                     );
                 })
             }
@@ -93,6 +93,7 @@ export function DynamicFormLlm({value, setOpenSheet}:
                 <Button type="submit" className={"mx-1"}>update</Button>
                 <Button type="button"  onClick={()=>{ setOpenSheet(false);}} className={"mx-1"}>close</Button>
             </div>
-        </form>
+            </form>
+        </DynamicFormContext.Provider>)
     );
 }
