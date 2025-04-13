@@ -1,6 +1,6 @@
 <img width="100" height="100" src="./assets/bot.svg"/>
 
-#Agents Home Lab
+# Agents Home Lab
 
 
 Welcome to **Agents Home Lab**, a hands-on project designed for learning how to create, configure, 
@@ -42,16 +42,16 @@ The project is structured to provide a complete environment for autonomous agent
 - **Server Side:**  
   - A custom Next.js server that integrates Redis, WebSocket and database (PostgreSQL via Prisma) functionality. 
   - API routes for interacting with agents and tools.
-  - See [TOOL_TEMPLATE](./TOOL_TEMPLATE.md) readme to see how the tools provided are build 
+  - See [TOOL_TEMPLATE](https://github.com/giuseppe-straziota/agents-home-lab/blob/main/TOOL_TEMPLATE.md) README to see how the tools provided are build 
   
 - **Client Side:**  
   - A React-based frontend built with Vite to visualize agent interactions, chat history, and real-time updates, using Shadcn and Tailwind for creation and styling of react components
   
 - **Tool Integration:**  
-  - Tools are defined (via JSON schemas) for function calling by OpenAI (e.g., `get_weather`, `send_email`, or custom database actions like `updateDataByTableName`).
+  - Tools are defined (via JSON schemas) for function calling by OpenAI (e.g., `get_weather`, `send_email`, or custom database actions like `updateDataByTableName` as I did).
 
 - **Data Persistence:**  
-  - A PostgreSQL database, managed with Prisma, and optionally, Redis for message history and caching.
+  - A PostgreSQL database, managed with Prisma and Redis for message history and caching.
 
 ---
 
@@ -134,6 +134,6 @@ Before you begin, ensure you have the following installed:
     ```
     wait until websocket, redis clients and prisma server have been started 
 
-## LIcense
+## License
 
-This project is licensed under the MIT License. Feel free to use, modify, and distribute it for educational purposes.
+This project is licensed under the MIT [LICENSE](https://github.com/giuseppe-straziota/agents-home-lab/blob/main/LICENSE.md]. Feel free to use, modify, and distribute it for educational purposes.
