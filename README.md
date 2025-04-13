@@ -10,6 +10,8 @@ The project is intended as a laboratory for developers interested in learning ho
 language models (LLMs) and create their own tools for interaction.I decided to separate the server and client using different libraries
 and frameworks to explore the full potential of this setup. However, you can choose to focus solely on tool building if you prefer.
 
+<img width="850" height="660" src="./assets/UI_with_chat.png"/>
+
 ---
 
 ## Table of Contents
@@ -179,7 +181,7 @@ when you define a tools that needs information from the LLM (is quite described 
 The GUI with a piece of conversation is shown in the following image
 
 
-<img width="1715" height="1313" src="./assets/UI_with_chat.png"/>
+<img width="850" height="660" src="./assets/UI_with_chat.png"/>
 
 Enjoy!
 
