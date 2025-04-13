@@ -136,4 +136,4 @@ Before you begin, ensure you have the following installed:
 
 ## License
 
-This project is licensed under the MIT [LICENSE](https://github.com/giuseppe-straziota/agents-home-lab/blob/main/LICENSE.md]. Feel free to use, modify, and distribute it for educational purposes.
+This project is licensed under the MIT [LICENSE](https://github.com/giuseppe-straziota/agents-home-lab/blob/main/LICENSE.md). Feel free to use, modify, and distribute it for educational purposes.
