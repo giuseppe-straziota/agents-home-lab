@@ -19,7 +19,6 @@ and frameworks to explore the full potential of this setup. However, you can cho
 - [Prerequisites](#prerequisites)
 - [Installation](#installation)
 - [Usage](#usage)
-- [Contributing](#contributing)
 - [License](#license)
 - [Acknowledgments](#acknowledgments)
 
@@ -133,6 +132,13 @@ Before you begin, ensure you have the following installed:
     npm run dev
     ```
     wait until websocket, redis clients and prisma server have been started 
+
+## Usage
+
+A predefined agent has been provided, its name is Alfred a housekeeper, and it has two different tools linked, Pantry_stock ( for retrieval information from the pantry) and
+Update_pantry (as the name suggests, the aim is to update the object inside the item table of the db, which contains the pantry items). Alfred uses the OpenAI LLM (the only available one now)
+to reach the goals and understand which tool is the best to use.  I suggest you explore the configuration of his tools to have a better understanding of the implementation and
+requirements for your new tools
 
 ## License
 
