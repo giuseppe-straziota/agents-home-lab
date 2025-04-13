@@ -197,7 +197,14 @@ export default function RightPanel() {
                                                         return (
                                                             <div className="grid w-90 max-w-sm items-center gap-1.5 px-4">
                                                                 <div className={"flex flex-row gap-4"}>
-                                                                <Label htmlFor={key}>{element.label}</Label>
+                                                                    <div className={"flex flex-col  w-full pl-1"}>
+                                                                        <Label
+                                                                            className={"text-left text-ellipsis text-nowrap overflow-hidden text-base text-zinc-300"}>{element.label}</Label>
+                                                                        <Label
+                                                                            className={"text-left text-xs text-zinc-500"} >
+                                                                            {element.description}
+                                                                        </Label>
+                                                                    </div>
                                                                     <Button className={"w-6 h-6 flex-end relative self-right hover:bg-zinc-700"} variant={"ghost"}
                                                                          onClick={() => {
                                                                                 if ((selectedConfRP!.values as ToolConfig).fields) {

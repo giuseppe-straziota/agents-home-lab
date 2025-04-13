@@ -11,6 +11,7 @@ export const ArrayForm = (
         mapKey: string;
         label: string;
         fields: Array<string>;
+        description: string;
     }
 )=>{
     const {setSelectedConf,selectedConf,register, unregister} = useContext(DynamicFormContext);
@@ -18,7 +19,14 @@ export const ArrayForm = (
     return (
         <div className="grid w-90 max-w-sm items-center gap-1.5 px-4  pb-1">
             <div className={"flex flex-row gap-4 pb-1"}>
-                <Label htmlFor={params.mapKey}>{params.label}</Label>
+                <div className={"flex flex-col  w-full pl-1"}>
+                    <Label
+                        className={"text-left text-ellipsis text-nowrap overflow-hidden text-base text-zinc-300"}>{params.label}</Label>
+                    <Label
+                        className={"text-left text-xs text-zinc-500"} >
+                        {params.description}
+                    </Label>
+                </div>
                 <Button className={"w-6 h-6 relative self-right hover:bg-zinc-700"} variant={"ghost"}
                         onClick={() => {
                             if ((selectedConf!.values as ToolConfig).fields) {

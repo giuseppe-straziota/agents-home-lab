@@ -32,7 +32,8 @@ export const ComponentManager=(
             <ArrayForm
                 mapKey={props.mapKey}
                 fields={props.element[props.mapKey].fields as unknown as string[]}
-                label={label} />
+                label={label}
+                description={props.element[props.mapKey].description as string}/>
         );
         default: return <></>;
     }
