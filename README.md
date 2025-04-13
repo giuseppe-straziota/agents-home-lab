@@ -1,4 +1,4 @@
-![Agents Home Lab Logo]<img width="100" height="100" src="./assets/bot.svg"/>
+<img width="100" height="100" src="./assets/bot.svg"/>
 
 #Agents Home Lab
 
@@ -42,7 +42,7 @@ The project is structured to provide a complete environment for autonomous agent
 - **Server Side:**  
   - A custom Next.js server that integrates Redis, WebSocket and database (PostgreSQL via Prisma) functionality. 
   - API routes for interacting with agents and tools.
-  - See [TOOL_TEMPLATE](../TOOL_TEMPLATE.md) readme to see how the tools provided are build 
+  - See [TOOL_TEMPLATE](./TOOL_TEMPLATE.md) readme to see how the tools provided are build 
   
 - **Client Side:**  
   - A React-based frontend built with Vite to visualize agent interactions, chat history, and real-time updates, using Shadcn and Tailwind for creation and styling of react components
