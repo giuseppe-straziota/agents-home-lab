@@ -1,6 +1,6 @@
 import {useEffect, useState} from "react";
 import {useSelector,useDispatch} from "react-redux";
-import {RootState, TemplateTypeModel} from "typesafe-actions";
+import {AgentsModel, RootState, SettingsModel, TemplateTypeModel} from "typesafe-actions";
 import {BrainCircuitIcon, Hammer, PlusIcon, TrashIcon} from "lucide-react";
 import {Button} from "@/components/ui/button.tsx";
 import {Tooltip, TooltipTrigger, TooltipContent} from "@/components/ui/tooltip.tsx";
@@ -25,10 +25,13 @@ import { Textarea } from "@/components/ui/textarea";
 
 export default function RightPanel() {
     const dispatch = useDispatch();
+    const settings = useSelector<RootState, SettingsModel>((state: RootState) => state.settings.configuration);
     const tools = useSelector<RootState, TemplateTypeModel>((state: RootState) => state.settings.tools);
     const llm = useSelector<RootState, TemplateTypeModel>((state: RootState) => state.settings.llm);
     const [openSheet, setOpenSheet] = useState<boolean>(false);
     const [actionSelected, setActionSelected] = useState<string | undefined>(undefined);
+    const listOfAgents: AgentsModel = useSelector<RootState, AgentsModel>((state: RootState) => state.agents.list);
+    const [maxLlmNumberExceeded, setMaxLlmNumberExceeded] = useState<boolean>(false);
     const [selectedConfRP, setSelectedConfRP] = useState<{
         conf: Template;
         name: string;
@@ -84,22 +87,34 @@ export default function RightPanel() {
                 } as LlmRequest)); break;
             default: break;
         }
-        console.log(selectedAgent, data);
         setOpenSheet(false);
     };
+
+    useEffect(() => {
+        const agent = listOfAgents
+            .find((agent) => agent.uuid === selectedAgent);
+        if (agent){
+            const max_llm_istance = (settings.find(setting => setting.name === "llm_max_instance") || {value: "0"});
+            setMaxLlmNumberExceeded(agent.llms.length >= Number.parseInt(max_llm_istance.value));
+        }
+    }, [selectedAgent]);
 
     return (
         <>
         <div className={"w-15 h-dvh  align-center flex flex-col flex-none  bg-zinc-800 gap-3 py-3"}>
-            {componentsList.map((item) => (
+            {componentsList.map((item) => {
+               const disabled =  item.id === "llm" && maxLlmNumberExceeded;
+                return (
                <Tooltip delayDuration={100}  key={item.id} >
                    <TooltipContent data-arrow={false}
                        side={"left"} sideOffset={5}  className={"rounded bg-zinc-700 border-1 border-zinc-600 "}>
-                       <p>{item.title}</p>
+                       <p>{disabled?"Maximum number exceeded":item.title}</p>
                    </TooltipContent>
                    <TooltipTrigger asChild>
                     <Button className={"hover:bg-zinc-700"}
                         onClick={() => {
+                            //TODO unfortunately if the button is disabled the tooltip content is not visible, I have to fix this inside the tooltip component
+                            if (disabled) {return;}
                             setOpenSheet(!openSheet);
                             setActionSelected(item.id);
                             reset();
@@ -109,7 +124,7 @@ export default function RightPanel() {
                     </Button>
                    </TooltipTrigger>
                </Tooltip>
-            ))}
+            );})}
         </div>
             <Sheet open={openSheet} onOpenChange={setOpenSheet}>
                 <SheetContent  className={"bg-zinc-800 text-zinc-500  overflow-y-auto overflow-x-none"}>
@@ -122,7 +137,6 @@ export default function RightPanel() {
                     <div className="grid w-90 max-w-sm items-center gap-1.5 px-4">
                             <Label>{"Select a " + actionSelected}</Label>
                             <Select onValueChange={(data) => {
-                                console.log(data);
                                 const conf:  Template=
                                     componentsList
                                         .find(component=>component.id === actionSelected)!.items
@@ -234,7 +248,6 @@ export default function RightPanel() {
                                                                 <Label>{"select a " + element.label}</Label>
                                                                 <Select
                                                                     onValueChange={(data) => {
-                                                                        console.log(data);
                                                                          setValue(key, data);
                                                                     }}>
                                                                     <SelectTrigger className="w-[180px]">

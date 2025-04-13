@@ -12,7 +12,6 @@ export async function GET(request: Request) {
                     name: 'redis_max_stored',
                 }
             });
-            console.log("agent list result_agent messages", agentUuid,redis_max_stored!.value)
             const result = await redis.redisClient!.lRange(agentUuid, Number.parseInt(redis_max_stored!.value!)*-1, -1);
                 return new Response(JSON.stringify({messages:
                         result
@@ -44,7 +43,6 @@ export async function POST(request: Request) {
     // Parse the request body
     const body = await request.json();
     const { name, agent_uuid, active, description } = body;
-    console.log('post agent call')
 
     const result = await prismaClient.agent.upsert({
         where: {
@@ -68,7 +66,6 @@ export async function POST(request: Request) {
     } catch (error) {
         console.error('Error publishing message:', error);
     }
-    console.log('post agent result', result)
     return new Response(JSON.stringify({name: name, id:  result.id }), {
         status: 201,
         headers: { 'Content-Type': 'application/json' }
@@ -80,7 +77,6 @@ export async function DELETE(request: Request) {
     const body = await request.json();
     const { agent_uuid } = body;
     if (agent_uuid){
-        console.log('delete agent call', agent_uuid);
         await prismaClient.agent.delete({
             where: {
                 uuid: agent_uuid

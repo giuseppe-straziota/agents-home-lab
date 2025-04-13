@@ -6,34 +6,34 @@ import {GlobalWS} from "../lib/websocket.js";
 let redisClient;
 let subscribeClient;
 let publishClient;
-console.log('redisClient yet connected', redisClient !== undefined);
+console.log('Is redis client already connected', redisClient !== undefined);
 if (!redisClient) {
     redisClient =  createClient();
     publishClient = redisClient.duplicate();
     subscribeClient = redisClient.duplicate();
     redisClient.on('error', (err) => console.error('Redis Client Error', err));
     redisClient.connect()
-        .then(c=>{
-            console.log('connected to redis ...')
+        .then(()=>{
+            console.log('connected to redis client ...')
         })
-        .catch((err) => console.error('Errore connessione Redis:', err));
+        .catch((err) => console.error('Error connection  Redis client:', err));
 
-    subscribeClient.on('error', (err) => console.error('Redis Pub/Sub Client Error:', err));
+    subscribeClient.on('error', (err) => console.error('Redis subscribeClient Error:', err));
     subscribeClient.connect()
-        .then(c=>{
-            console.log('connected to redis pubSubClient...')
+        .then(()=>{
+            console.log('connected to redis subscribeClient...')
         })
         .catch((err) =>
-        console.error('Errore connessione Pub/Sub Redis:', err)
+        console.error('Error connection subscribeClient Redis:', err)
     );
 
     publishClient.on('error', (err) => console.error('Redis publishClient Client Error:', err));
     publishClient.connect()
-        .then(c=>{
+        .then(()=>{
             console.log('connected to redis publishClient...')
         })
         .catch((err) =>
-        console.error('Errore connessione publishClient Redis:', err)
+        console.error('Error connection publishClient Redis:', err)
     );
 
 }
@@ -49,12 +49,11 @@ export function redisConnect() {
         });
     }
 
-    redisClient.set('redis_conn_timestamp', Date.now().toString()).then((data) => {
+    redisClient.set('redis_conn_timestamp', Date.now().toString()).then(() => {
         console.log('Redis Client Connected');
     });
 
     subscribeClient.subscribe('info', (message) => {
-        console.log('lib redis info', message);
         ws.clients.forEach((client) => {
             if (client.readyState === WebSocket.OPEN) {
                 client.send(JSON.stringify({
@@ -66,7 +65,6 @@ export function redisConnect() {
     })
 
     subscribeClient.subscribe('processing', (message) => {
-        console.log('lib redis processing', message);
         ws.clients.forEach((client) => {
             if (client.readyState === WebSocket.OPEN) {
                 client.send(JSON.stringify({

@@ -15,7 +15,6 @@ function loadConfiguration(): Promise<SettingsModel>  {
                 return res.json();
             })
             .then((data) => {
-                console.log(data);
                 resolve(data);
             });
 
@@ -35,7 +34,6 @@ function updateConfiguration(settings : {[key:string]:string|number}): Promise<S
                 return res.json();
             })
             .then((data) => {
-                console.log(data);
                 resolve(data);
             });
 
@@ -54,7 +52,6 @@ function loadTools(): Promise<TemplateTypeModel>  {
                 return res.json();
             })
             .then((data) => {
-                console.log(data);
                 resolve(data);
             });
 
@@ -76,7 +73,6 @@ function upsertTool(tool: ToolRequest): Promise<TemplateTypeModel>  {
                 return res.json();
             })
             .then((data) => {
-                console.log(data);
                 resolve(data);
             });
 
@@ -100,7 +96,6 @@ function deleteTool(data: {tool_uuid:string, agent_uuid:string, tool_name:string
                 return res.json();
             })
             .then((data) => {
-                console.log("data from api add agent", data);
                 resolve(data);
             });
     });
@@ -118,7 +113,6 @@ function loadLlm(): Promise<TemplateTypeModel>  {
                 return res.json();
             })
             .then((data) => {
-                console.log(data);
                 resolve(data);
             });
 
@@ -141,7 +135,6 @@ function upsertLlm(llm: LlmRequest): Promise<TemplateTypeModel>  {
                 return res.json();
             })
             .then((data) => {
-                console.log(data);
                 resolve(data);
             });
 
@@ -168,7 +161,6 @@ function deleteLlm(data: {llm_uuid:string,
                 return res.json();
             })
             .then((data) => {
-                console.log("data from api add agent", data);
                 resolve(data);
             });
     });

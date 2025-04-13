@@ -145,7 +145,15 @@ async function main() {
             name: "redis_max_stored",
             value: "17",
             type: "number",
-            description: "Max number of messages to store"
+            description: "Max number of messages retrieved by the store for sending to the client"
+        }
+    })
+    await prismaClient.configuration.create({
+        data:{
+            name: "llm_max_istance",
+            value: "1",
+            type: "number",
+            description: "Max LLM instances for an agent"
         }
     })
 

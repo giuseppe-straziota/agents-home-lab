@@ -65,7 +65,6 @@ export default function Console() {
 
 
     useEffect(() => {
-        console.log("selectedAgentUuid changed", selectedAgentUuid);
         if (!selectedAgentUuid) return;
         dispatch(loadAgentMsgAsync.request({agent_uuid:selectedAgentUuid}));
         scrollToBottom();

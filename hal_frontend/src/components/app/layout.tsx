@@ -24,7 +24,6 @@ export default function Layout({ children }: { children: React.ReactNode}) {
 
     useEffect(() => {
         if (selectedAgent==="" && listOfAgents.length>0){
-            console.log("update selectedAgent",listOfAgents );
             dispatch(selectedAgentAct(listOfAgents[0].uuid));
         }
         // eslint-disable-next-line react-hooks/exhaustive-deps

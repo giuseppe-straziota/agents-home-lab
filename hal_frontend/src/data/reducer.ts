@@ -7,15 +7,15 @@ import {
     loadLlmAsync,
     loadSettingsAsync, loadToolsAsync
 } from "../data/actions";
-
+ 
 const reducer = combineReducers({
     configuration: createReducer([] as SettingsModel)
         .handleAction(
             [
                 loadSettingsAsync.success,
             ],
+            // @ts-expect-error state is not used but lint don't know that it is here to stay ;)
             (state: SettingsModel, action) => {
-                console.log("reducer action", action, state);
                 return action.payload;
             }
         ),
@@ -24,8 +24,8 @@ const reducer = combineReducers({
             [
                 loadToolsAsync.success,
             ],
+            // @ts-expect-error state is not used but lint don't know that it is here to stay ;)
             (state: TemplateTypeModel, action) => {
-                console.log("reducer action", action, state);
                 return action.payload;
             }
         ),
@@ -34,8 +34,8 @@ const reducer = combineReducers({
             [
                 loadLlmAsync.success,
             ],
-            (state: TemplateTypeModel, action) => {
-                console.log("reducer action", action, state);
+            // @ts-expect-error state is not used but lint don't know that it is here to stay ;)
+            (state: TemplateTypeModel, action) => { 
                 return action.payload;
             }
         )

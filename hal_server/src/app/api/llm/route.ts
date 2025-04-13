@@ -5,7 +5,6 @@ import prismaClient from "@/server/lib/prisma";
 export async function GET() {
     try {
         const result = await prismaClient.llm.findMany();
-        console.log("llm list call")
         return new Response(JSON.stringify(result), {
             status: 200,
             headers: { 'Content-Type': 'application/json' }
@@ -19,7 +18,6 @@ export async function GET() {
 export async function POST(request: Request) {
     // Parse the request body
     const body = await request.json();
-    console.log('llm post call');
     const {
         agent_uuid,
         llm_name,
@@ -54,7 +52,6 @@ export async function POST(request: Request) {
                   uuid: uuidv4()
               }
            })
-           console.log([result, config])
         }else{
            result = await prismaClient.agent_llm.update({
                where: {
@@ -76,7 +73,6 @@ export async function POST(request: Request) {
             console.error('Error publishing message:', error);
         }
 
-        console.log('route llm called',result);
         return new Response(JSON.stringify({rows:result}), {
             status: 200,
             headers: { 'Content-Type': 'application/json' }
@@ -89,7 +85,6 @@ export async function POST(request: Request) {
 
 export async function DELETE(request: Request) {
     const body = await request.json();
-    console.log('api delete llm');
     const {
         llm_uuid,
         agent_uuid,

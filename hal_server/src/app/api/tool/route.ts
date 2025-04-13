@@ -5,7 +5,6 @@ import prismaClient from "@/server/lib/prisma";
 export async function GET() {
     try {
         const result = await prismaClient.tool.findMany({})
-        console.log("tool list call")
         return new Response(JSON.stringify(result), {
             status: 200,
             headers: { 'Content-Type': 'application/json' }
@@ -18,7 +17,6 @@ export async function GET() {
 
 export async function POST(request: Request) {
     const body = await request.json();
-    console.log('api post tool call');
     const {
         agent_uuid,
         fn_name,
@@ -89,7 +87,6 @@ export async function POST(request: Request) {
 
 export async function DELETE(request: Request) {
     const body = await request.json();
-    console.log('delete tool api');
     const {
         tool_uuid,
         agent_uuid,

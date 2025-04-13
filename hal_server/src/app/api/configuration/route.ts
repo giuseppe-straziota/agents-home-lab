@@ -5,7 +5,6 @@ import prismaClient from "@/server/lib/prisma.js";
 export async function GET() {
     try {
         const result = await prismaClient.configuration.findMany({});
-        console.log("configuration list call")
         return new Response(JSON.stringify(result), {
             status: 200,
             headers: { 'Content-Type': 'application/json' }

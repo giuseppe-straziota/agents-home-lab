@@ -17,7 +17,6 @@ export const SelectForm = (
                 <Label>{"select a " + params.label}</Label>
                 <Select defaultValue={(selectedConf!.values as unknown as {[key:string]:string})[params.mapKey]}
                         onValueChange={(data) => {
-                            console.log(data);
                             setValue!(params.mapKey, data);
                         }}>
                     <SelectTrigger className="w-[180px]">

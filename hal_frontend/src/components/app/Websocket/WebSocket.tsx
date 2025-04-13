@@ -10,21 +10,18 @@ const WebSocketCmp = ({ children }: { children: React.ReactNode}) =>{
     const socket = new WebSocket("ws://localhost:3006/ws");
 
     const sendWSMessage = (message: string | ArrayBufferLike | Blob | ArrayBufferView): void=> {
-        console.log("sendMessage", message);
         socket.send(message);
     };
 
     useEffect(() => {
 
-        socket.onopen = function(event) {
+        socket.onopen = function() {
             // Handle connection open
-            console.log("onopen", event);
             toast.info("websocket successfully opened");
         };
 
         socket.onmessage = function(event) {
             // Handle received message
-            console.log("onmessage", event);
             const eventParsed = JSON.parse(event.data);
             switch (eventParsed.channel) {
                 case "chat": {
@@ -49,13 +46,13 @@ const WebSocketCmp = ({ children }: { children: React.ReactNode}) =>{
             }
         };
 
-        socket.onclose = function(event) {
+        socket.onclose = function() {
             // Handle connection close
-            console.log("onclose", event);
+            console.log("websocket onclose");
         };
 
         return ()=>{
-            console.log("closed");
+            console.log("websocket closed");
         };
         // eslint-disable-next-line react-hooks/exhaustive-deps
     },[]);

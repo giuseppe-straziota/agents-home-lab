@@ -16,7 +16,6 @@ function loadAgents(): Promise<AgentsModel>  {
                 return res.json();
             })
             .then((agents) => {
-                console.log("data from api agent", agents);
                 resolve(Object.keys(agents).map((agent_uuid: string) => {
                     const agent = agents[agent_uuid];
                     return {
@@ -44,7 +43,6 @@ function loadAgentMsg(agent_uuid:string): Promise<Message[]>  {
                 return res.json();
             })
             .then((response) => {
-                console.log("data from api loadAgentMsg", response.messages);
                 resolve(response.messages as Message[]);
             });
     });
@@ -67,7 +65,6 @@ function upsertAgent(data: AgentRequest): Promise<AgentsModel>  {
                 return res.json();
             })
             .then((data) => {
-                console.log("data from api add agent", data);
                 resolve([{
                     name: data.name,
                     description: data.description,
@@ -95,7 +92,6 @@ function deleteAgent(data: {agent_uuid:string}): Promise<AgentsModel>  {
                 return res.json();
             })
             .then((data) => {
-                console.log("data from api add agent", data);
                 resolve([{
                     name: data.name,
                     active: data.active,

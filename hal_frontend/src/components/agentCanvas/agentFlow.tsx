@@ -88,7 +88,6 @@ export default function AgentFlow() {
                 }}
                 fitView={true}
                 onNodeClick={(event, node) => {
-                    console.log(event, node);
                     if (node.type !== "groupNode" && !["chat", "agent"].includes(node.id)) {
                         setOpenSheet(!openSheet);
                         setNodeSelected(node);

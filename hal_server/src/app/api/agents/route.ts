@@ -2,6 +2,7 @@ import redis from "@/server/lib/redis";
 import prismaClient from "@/server/lib/prisma.js";
 
 export interface LlmConfig { description:string, model:string,prompt:string }
+
 export interface ToolConfig {
     action: string,
     description: string,
@@ -22,15 +23,12 @@ export interface ConfType  {
     tool_name?: string,
     tool_uuid?: string,
 }
-
-
 export interface Agent  {
     name:string,
     active: boolean,
     llms: Array<ConfType>,
     tools: Array<ConfType>,
-    uuid: string,
-    description: string
+    description: string | null
 }
 
 export async function GET() {
@@ -50,7 +48,7 @@ export async function GET() {
 
         const agents: { [key:string] : Agent } = {};
         result_agents.forEach((row ) => {
-            agents[row.uuid  ] = {
+            agents[row.uuid] = {
                 llms: result_llm.filter((llm: { agent_uuid: string; })=> llm.agent_uuid == row.uuid),
                 tools: result_tool.filter((tool: { agent_uuid: string; })=> tool.agent_uuid == row.uuid),
                 name: row.name,
@@ -67,7 +65,6 @@ export async function GET() {
                 console.error('Error publishing message:', error);
             }
         })
-         console.log("agent list result_agents", agents)
 
         return new Response(JSON.stringify(agents), {
             status: 200,

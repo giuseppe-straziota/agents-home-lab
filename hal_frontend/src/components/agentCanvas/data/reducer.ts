@@ -10,14 +10,13 @@ import {Message} from "@/store/types";
 const reducer = combineReducers({
     list: createReducer([] as AgentsModel)
         .handleAction([loadAgentsAsync.success],
+            // @ts-expect-error state is not used but lint don't know that it is here to stay ;)
             (state:AgentsModel, action: ActionType<typeof loadAgentsAsync.success>): AgentsModel => {
-                console.log("reducer action", action, state);
                 return action.payload;
             }
          )
          .handleAction([upsertAgentAsync.success],
             (state:AgentsModel, action: ActionType<typeof upsertAgentAsync.success>): AgentsModel => {
-                console.log("reducer action addAgentAsync", action, state);
                 state.push( {
                     name: action.payload[0].name,
                     description: action.payload[0].description,
@@ -32,29 +31,29 @@ const reducer = combineReducers({
         ),
     selected: createReducer("")
         .handleAction([selectedAgentAct],
+            // @ts-expect-error state is not used but lint don't know that it is here to stay ;)
             (state: string, action: ActionType<typeof selectedAgentAct>): string => {
-                console.log("reducer action", action, state);
                 return action.payload;
             }
         ),
     selectedMsg: createReducer([] as Message[])
         .handleAction([loadAgentMsgAsync.success],
+            // @ts-expect-error state is not used but lint don't know that it is here to stay ;)
             (state: Message[], action: ActionType<typeof loadAgentMsgAsync.success>): Message[] => {
-                console.log("reducer action", action, state);
                 return action.payload;
             }
         ),
     lastAgentMsg: createReducer({} as Message)
         .handleAction([setLastAgentMsgAct],
+            // @ts-expect-error state is not used but lint don't know that it is here to stay ;)
             (state: Message, action: ActionType<typeof setLastAgentMsgAct>): Message => {
-                console.log("reducer action", action, state);
                 return action.payload;
             }
         ),
     processingState: createReducer("")
         .handleAction([setProcessingAct],
+            // @ts-expect-error state is not used but lint don't know that it is here to stay ;)
             (state: string  , action: ActionType<typeof setProcessingAct>): string => {
-                console.log("reducer action", action, state);
                 return action.payload;
             }
         )

@@ -5,10 +5,10 @@
   "type": "module",
   "scripts": {
     "dev": "node src/server/server.js",
-    "debug": "node src/server/server.js NODE_OPTIONS='--inspect'",
-    "build": "next build",
     "start": "node src/server/server.js",
-    "lint": "next lint"
+    "lint": "next lint",
+    "prisma:migrate": "npx prisma migrate dev --name init",
+    "prisma:generate": "npx prisma generate"
   },
   "dependencies": {
     "@prisma/client": "^6.5.0",
@@ -42,8 +42,6 @@
     "tailwindcss": "^4",
     "typescript": "^5",
     "ws": "^8.18.1"
-  },
-  "prisma": {
-    "seed": "node prisma/seed.js"
   }
+
 }

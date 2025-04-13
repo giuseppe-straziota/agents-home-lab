@@ -63,7 +63,6 @@ export function DynamicFormTool({value, setOpenSheet}:
     }, []);
 
     const onSubmit = (data: FieldValues) => {
-        console.log(data, currentTool);
         dispatch(upsertToolAsync.request(
             {
                 tool_uuid: currentTool!.tool_uuid,
@@ -87,7 +86,6 @@ export function DynamicFormTool({value, setOpenSheet}:
     };
 
     const deleteTool = (): void => {
-        console.log("deleting", value, currentTool);
         dispatch(deleteToolAsync.request({
             tool_uuid: value!.id,
             agent_uuid: currentTool!.agent_uuid,

@@ -6,16 +6,15 @@ let wsServer;
 export class GlobalWS {
 
          constructor(){
-             console.log("call to new GlobalWS constructor");
+             console.log("GlobalWS constructor called");
             if (!wsServer) {
-                console.log("creation on a new Websocket server");
+                console.log("creation of a new Websocket server");
                 wsServer = new WebSocketServer( {port: 3006, path:"/ws"});
                 wsServer.on('connection', (ws) => {
                     console.log('New client connected');
 
                     ws.on('message', (message) => {
                         const content = JSON.parse(message);
-                        console.log('Message received:', content);
                         wsChannelManager(ws, content);
                     });
 

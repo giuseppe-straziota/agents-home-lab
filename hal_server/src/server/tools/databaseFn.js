@@ -14,7 +14,7 @@ import prismaClient from "../lib/prisma.js";
  *       }
  *
  * The function builds a SELECT query based on the provided configuration and arguments,
- * executes it against the PostgreSQL database, and returns the selected rows.
+ * executes it against the PostgreSQL database through prisma.io, and returns the selected rows.
  */
 export const retrieveAllDataByTableName = async (argsFromAssistant, def_tool) => {
 
@@ -54,7 +54,7 @@ export const retrieveAllDataByTableName = async (argsFromAssistant, def_tool) =>
  *       }
  *
  * The function builds an UPDATE query based on the provided configuration and arguments,
- * executes it against the PostgreSQL database, and returns the updated rows.
+ * executes it against the PostgreSQL database through prisma.io, and returns the updated rows.
  *
 
  */
@@ -63,7 +63,6 @@ export const updateDataByTableName = (argsFromAssistant,def_tool) => {
         // Extract table name and the field names from the configuration.
         // These should come from a trusted configuration to avoid SQL injection.
         const table = def_tool.tool_config.table;
-        console.log('updateDataByTableName', argsFromAssistant);
         const conflictField = argsFromAssistant.conflictField;
         argsFromAssistant.updates.forEach(async (value) => {
 
@@ -74,12 +73,11 @@ export const updateDataByTableName = (argsFromAssistant,def_tool) => {
             createItem[value.fieldToUpdate] = value.newValue;
             const updateItem = {}
             updateItem[value.fieldToUpdate] = value.newValue;
-            const result = await prismaClient[table].upsert({
+            await prismaClient[table].upsert({
                 where:  condition                 ,
                 update: updateItem,
                 create: createItem,
             })
-            console.log(result)
         })
         return "Updated successfully.";
     } catch (error) {

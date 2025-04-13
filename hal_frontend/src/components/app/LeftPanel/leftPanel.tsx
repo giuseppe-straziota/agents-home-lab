@@ -38,7 +38,6 @@ export default function LeftPanel() {
 
     useEffect(() => {
         setAgents(listOfAgents);
-        console.log(selectedAgentUuid);
         if (selectedAgentUuid === "" && listOfAgents.length > 0) {
             dispatch(selectedAgentAct(listOfAgents[0].uuid));
             setCurrentAgent(listOfAgents[0]);
@@ -79,7 +78,6 @@ export default function LeftPanel() {
             active:   String(data.active) === "on" || String(data.active) === "true",
             description: data.description
         }));
-        console.log(selectedAgentUuid, data);
         setOpenDialog(false);
     };
 
@@ -89,7 +87,6 @@ export default function LeftPanel() {
     };
 
     const updateSettings: SubmitHandler<FormSetting> = (data) => {
-        console.log("upsert settings", data);
         dispatch(updateSettingsAsync.request(data));
         setOpenDialogSetting(false);
     };

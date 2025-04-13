@@ -53,7 +53,7 @@ CREATE TABLE "item" (
     "pantry_id" INTEGER DEFAULT 1,
     "category_id" INTEGER DEFAULT 1,
     "name" VARCHAR(255) NOT NULL,
-    "quantity" DECIMAL NOT NULL,
+    "quantity" DECIMAL,
     "unit" VARCHAR(50),
     "expiration_date" DATE DEFAULT (now() + '15 days'::interval),
     "created_at" TIMESTAMP(6) DEFAULT CURRENT_TIMESTAMP,
@@ -141,3 +141,16 @@ ALTER TABLE "item" ADD CONSTRAINT "item_category_id_fkey" FOREIGN KEY ("category
 
 -- AddForeignKey
 ALTER TABLE "item" ADD CONSTRAINT "item_pantry_id_fkey" FOREIGN KEY ("pantry_id") REFERENCES "pantry"("id") ON DELETE CASCADE ON UPDATE NO ACTION;
+
+-- Add function and trigger to update the update_at field of the item table when the row is updated
+CREATE FUNCTION public.trigger_set_timestamp() RETURNS trigger
+    LANGUAGE plpgsql
+    AS $$
+BEGIN
+  NEW.updated_at = NOW();
+RETURN NEW;
+END;
+$$;
+
+CREATE TRIGGER set_timestamp BEFORE UPDATE ON public.item FOR EACH ROW EXECUTE FUNCTION public.trigger_set_timestamp();
+

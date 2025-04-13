@@ -52,7 +52,6 @@ export function DynamicFormLlm({value, setOpenSheet}:
     }, []);
 
     const onSubmit  = (data: FieldValues) => {
-        console.log(data);
           dispatch(upsertLlmAsync.request({
                     agent_uuid: selectedAgent,
                     config: {prompt: data.prompt, description: data.description, model: data.model},
@@ -63,7 +62,6 @@ export function DynamicFormLlm({value, setOpenSheet}:
     };
 
     const deleteTool = (): void => {
-        console.log("deleting", value, currentLlm);
          dispatch(deleteLlmAsync.request({llm_uuid: value!.id, agent_uuid: selectedAgent, llm_name: selectedConf!.name}));
         setOpenSheet(false);
     };
