@@ -7,7 +7,7 @@
     "dev": "node src/server/server.js",
     "start": "node src/server/server.js",
     "lint": "next lint",
-    "prisma:push": "npx prisma push db",
+    "prisma:push": "npx prisma db push",
     "prisma:generate": "npx prisma generate"
   },
   "dependencies": {

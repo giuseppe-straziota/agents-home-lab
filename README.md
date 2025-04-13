@@ -22,7 +22,6 @@ and frameworks to explore the full potential of this setup. However, you can cho
 - [Installation](#installation)
 - [Usage](#usage)
 - [License](#license)
-- [Acknowledgments](#acknowledgments)
 
 ---
 

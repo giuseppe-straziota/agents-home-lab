@@ -1,36 +1,77 @@
-This is a [Next.js](https://nextjs.org) project bootstrapped with [`create-next-app`](https://nextjs.org/docs/app/api-reference/cli/create-next-app).
+## Architecture
 
-## Getting Started
+The project is structured to provide a complete environment for autonomous agent experimentation:
 
-First, run the development server:
+- **Server Side:**
+    - A custom Next.js server that integrates Redis, WebSocket and database (PostgreSQL via Prisma) functionality.  Redis is used to store the messages send and received by the
+      the LLM, informations that we need to send back to every openaAI call. Redis store also the configuration of every agent.
+    - API routes for interacting with agents and tools.
+    - See [TOOL_TEMPLATE](https://github.com/giuseppe-straziota/agents-home-lab/blob/main/TOOL_TEMPLATE.md) README to see how the tools provided are build
 
-```bash
-npm run dev
-# or
-yarn dev
-# or
-pnpm dev
-# or
-bun dev
-```
+- **Tool Integration:**
+    - Tools are defined (via JSON schemas) for function calling by OpenAI (e.g., `get_weather`, `send_email`, or custom database actions like `updateDataByTableName` as I did).
 
-Open [http://localhost:3000](http://localhost:3000) with your browser to see the result.
+- **Data Persistence:**
+    - A PostgreSQL database, managed with Prisma and Redis for message history and caching.
 
-You can start editing the page by modifying `app/page.tsx`. The page auto-updates as you edit the file.
+---
 
-This project uses [`next/font`](https://nextjs.org/docs/app/building-your-application/optimizing/fonts) to automatically optimize and load [Geist](https://vercel.com/font), a new font family for Vercel.
+## Prerequisites
 
-## Learn More
+Before you begin, ensure you have the following installed:
 
-To learn more about Next.js, take a look at the following resources:
+- **Node.js** (version 18 or higher)
+- **PostgreSQL** database
+- **Redis**
+- A valid **OpenAI API Key**
 
-- [Next.js Documentation](https://nextjs.org/docs) - learn about Next.js features and API.
-- [Learn Next.js](https://nextjs.org/learn) - an interactive Next.js tutorial.
+---
 
-You can check out [the Next.js GitHub repository](https://github.com/vercel/next.js) - your feedback and contributions are welcome!
+## Installation
 
-## Deploy on Vercel
+1. **Install Dependencies**
 
-The easiest way to deploy your Next.js app is to use the [Vercel Platform](https://vercel.com/new?utm_medium=default-template&filter=next.js&utm_source=create-next-app&utm_campaign=create-next-app-readme) from the creators of Next.js.
+   Install dependencies for the server from the root directory:
 
-Check out our [Next.js deployment documentation](https://nextjs.org/docs/app/building-your-application/deploying) for more details.
+    ```
+    cd hal-server
+    npm install 
+    ``` 
+
+2. **Configure Enviroments Variables**
+
+   Create a ```.env``` file in the root directory of the server application and add your enviroment variables.
+
+     ```
+    SERVER_HOST=localhost
+    SERVER_PORT=3005
+    
+    WS_HOST=localhost
+    WS_PORT=3006
+    
+    REDIS_HOST=127.0.0.1
+    REDIS_PORT=6379
+      
+    OPENAI_API_KEY=your_openai_api_key
+       
+    DATABASE_URL="postgresql://postgres:postgres@localhost:5432/HomeAgents?schema=public"
+    ```
+   feel free to change address, port and database information
+
+3. **Run Database Migrations**
+
+   Ensure your PostgreSQL database is running, then run Prisma migrations to set up your schema and seed initial data from the root of the server application
+   ```
+   npx prisma db push
+   npx prisma db seed 
+   ``` 
+
+5. **Start the Development Server**
+
+   Start the server from the root directory
+
+    ```
+    npm start
+    ``` 
+
+    wait until websocket, redis clients and prisma server have been started 
