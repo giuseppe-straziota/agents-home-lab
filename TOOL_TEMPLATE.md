@@ -161,7 +161,7 @@ looking into the tool create using this template (see Update_pantry using the cl
     }};
     ```
 
-just a bit complex but nether more. In this case the function is build to accept both arguments, from the
+just a bit complex but no more than this. In this case the function is build to accept both arguments, from the
 llm and the value defined inside the template instance used for this function.
 
 3. Register the Function for the Agent
@@ -175,4 +175,4 @@ llm and the value defined inside the template instance used for this function.
    }
    ```
 
-**Contact me for any questions or doubts**
+**Contact me for any questions or doubts**  😏

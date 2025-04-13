@@ -106,7 +106,7 @@ export default function LeftPanel() {
                            id={"name"} {...register("description")}  />
                 </div>
                 <div key={"active"} className={"py-2"}>
-                    <Label className={"text-zinc-400 mb-2"}>At work</Label>
+                    <Label className={"text-zinc-400 mb-2"}>Active</Label>
                     <Switch defaultChecked={isNewAgent ? false : currentAgent?.active}
                             onCheckedChange={(state) => {
                                 setValue("active", state);

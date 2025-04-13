@@ -54,19 +54,15 @@ async function main() {
                     "label":"Name"
                 },
                 "table": {
-                    "type":"input",
+                    "type": "select",
+                    "items":["item","category","pantry"],
                     "label": "Table"
                 },
                 "fields": {
                     "type":"array",
                     "label":"Fields",
                     "arrayType":"string",
-                    "description":"Add field that you want use retrieve from the table"
-                },
-                "action": {
-                    "type": "select",
-                    "items":["SELECT"],
-                    "label":"Action"
+                    "description":"Add a field that you want to use to retrieve from the table"
                 }
             },
             label: "Tool to retrieve data from the database"
@@ -86,18 +82,14 @@ async function main() {
                     "label":"Name"
                 },
                 "table": {
-                    "type":"input",
-                    "label": "Table"
+                    "type":"select",
+                    "label": "Table",
+                    "items":["item","pantry","category"]
                 },
                 "parameters": {
                     "type":"textarea",
                     "label":"Parameters",
-                    "description":"Add the parameters to send at the assistant "
-                },
-                "action": {
-                    "type": "select",
-                    "items":["UPDATE"],
-                    "label":"Action"
+                    "description":"Add the parameters to send at the assistant"
                 }
             },
             label:"Tool to update the database",
@@ -121,7 +113,7 @@ async function main() {
             id_agent: agent.id,
             id_tool: tool_retrieve.id,
             uuid: uuidv4(),
-            config: {"tool_name":"Pantry_stock","table":"item","fields":["name","quantity","expiration_date"],"action":"SELECT","description":"Retrieve the list of items from my pantry store with name and quantity"}
+            config: {"tool_name":"Pantry_retrieval","table":"item","fields":["name","quantity","expiration_date","unit"],"description":"Get the list of items from my pantry store, including their names and quantities; please avoid using a list format."}
         }
     })
     await prismaClient.agent_tool.create({
@@ -129,7 +121,7 @@ async function main() {
             id_agent: agent.id,
             id_tool: tool_update.id,
             uuid: uuidv4(),
-            config: {"tool_name":"Update_pantry","table":"item","parameters":{"type":"object","required":["updates"],"properties":{"updates":{"type":"array","description":"Array of objects containing fields to update.","items":{"type":"object","required":["fieldToUpdate","newValue","fieldCondition","conditionValue"],"properties":{"fieldToUpdate":{"type":"string","description":"The field that needs to be updated"},"newValue":{"type":"number","description":"The new value to set for the field being updated"},"fieldCondition":{"type":"string","description":"The field name to check against for the condition"},"conditionValue":{"type":"string","description":"The value to match for the condition field"}},"additionalProperties":false}}},"additionalProperties":false},"fields":[],"action":"UPDATE","description":"Use this function to update the quantities of items by passing an array of objects like this\n { \n  fieldToUpdate: \"quantity\",\n  newValue: 42,\n  fieldCondition: \"name\",\n  conditionValue: \"apple\"\n}"}
+            config: {"tool_name":"Update_pantry","table":"item","parameters":{"type":"object","properties":{"conflictField":{"type":"string","description":"The field to be used for conflict detection. For example: 'name'."},"updates":{"type":"array","description":"An array of objects specifying the updates to be performed.","items":{"type":"object","required":["fieldToUpdate","newValue","fieldCondition","conditionValue"],"properties":{"fieldToUpdate":{"type":"string","description":"The column to update (e.g., 'quantity' or 'unit')."},"newValue":{"type":"number","description":"The new numeric value to set."},"fieldCondition":{"type":"string","description":"The field name used to determine which row to update (e.g., 'name')."},"conditionValue":{"type":"string","description":"The value that must match in the fieldCondition (e.g., 'carota')."}},"additionalProperties":false}}},"required":["conflictField","updates"],"additionalProperties":false},"fields":[],"description":"Update or create items in the database. Use this function to update the quantity and unit for an existing item or create a new item if it does not exist. For example, from the prompt 'add 1kg of carrots and 4 apples', extract the items with their quantities and units."}
         }
     })
     await prismaClient.configuration.create({
@@ -174,9 +166,9 @@ async function main() {
         data:{
             pantry_id: pantry.id,
             category_id: category.id,
-            name: "Milk",
+            name: "milk",
             quantity: 1,
-            unit: "litre"
+            unit: "liter"
         }
     })
 
@@ -184,7 +176,7 @@ async function main() {
        data:{
            pantry_id: pantry.id,
            category_id: category.id,
-           name: "Eggs",
+           name: "eggs",
            quantity: 4,
            unit: "pieces"
        }

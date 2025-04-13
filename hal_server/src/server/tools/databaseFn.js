@@ -65,16 +65,16 @@ export const updateDataByTableName = (argsFromAssistant,def_tool) => {
         const table = def_tool.tool_config.table;
         const conflictField = argsFromAssistant.conflictField;
         argsFromAssistant.updates.forEach(async (value) => {
-
+            const newValue = typeof value.newValue === 'string'?value.newValue.toLowerCase():value.newValue;
             const condition = {}
             condition[conflictField] = value.conditionValue
             const createItem = {}
             createItem[value.fieldCondition] = value.conditionValue;
-            createItem[value.fieldToUpdate] = value.newValue;
+            createItem[value.fieldToUpdate] = newValue;
             const updateItem = {}
-            updateItem[value.fieldToUpdate] = value.newValue;
+            updateItem[value.fieldToUpdate] = newValue;
             await prismaClient[table].upsert({
-                where:  condition                 ,
+                where:  condition,
                 update: updateItem,
                 create: createItem,
             })

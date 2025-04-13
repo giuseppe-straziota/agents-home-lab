@@ -7,7 +7,7 @@
     "dev": "node src/server/server.js",
     "start": "node src/server/server.js",
     "lint": "next lint",
-    "prisma:migrate": "npx prisma migrate dev --name init",
+    "prisma:push": "npx prisma push db",
     "prisma:generate": "npx prisma generate"
   },
   "dependencies": {
