@@ -125,8 +125,16 @@ Before you begin, ensure you have the following installed:
     ```
     npm start
     ```
+
+6. **Configure Enviroments Variables for the frontend**
+
+   Create a .env file in the root directory of the client application
+   and add your enviroment variables.
+    ```
+   VITE_WEBSOCKET_URL=ws://localhost:3006/ws
+   ```
    
-6. **Start the Develompent Client**
+7 **Start the Develompent Client**
 
     Navigate to the frontend folder and start the Vite server
 

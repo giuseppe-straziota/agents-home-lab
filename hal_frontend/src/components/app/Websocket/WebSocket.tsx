@@ -7,8 +7,8 @@ import {setLastAgentMsgAct, setProcessingAct} from "@/components/agentCanvas/dat
 
 const WebSocketCmp = ({ children }: { children: React.ReactNode}) =>{
     const dispatch = useDispatch();
-    const socket = new WebSocket("ws://localhost:3006/ws");
-
+    const wsUrl = import.meta.env.VITE_WEBSOCKET_URL;
+    const socket = new WebSocket(wsUrl);
     const sendWSMessage = (message: string | ArrayBufferLike | Blob | ArrayBufferView): void=> {
         socket.send(message);
     };

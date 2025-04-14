@@ -23,8 +23,15 @@ Before you begin, ensure you have the following installed:
     cd hal-frontend
     npm install
     ```
+2. **Configure Enviroments Variables for the frontend**
 
-2. **Start the Develompent Client**
+   Create a .env file in the root directory of the client application
+   and add your enviroment variables.
+   ```
+   VITE_WEBSOCKET_URL=ws://localhost:3006/ws
+   ```  
+
+3. **Start the Develompent Client**
 
    Navigate to the frontend folder and start the Vite server
 
