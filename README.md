@@ -154,7 +154,7 @@ Anyway you can add your agent and create your own tools using the templates avai
 
 <img width="390" height="330" src="./assets/create_agent.png"/>
 
-A modal with some information about your agent will be shown (you can decide to not activate the agent and the chat will no be available)
+A modal with some information about your agent will be shown (you can decide not to activate the agent, and the chat will not be available)
 
 <img width="470" height="460" src="./assets/create_agent_form.png"/>
 
@@ -163,27 +163,26 @@ After the agent creation you have to add an LLM (just one for agent in this rele
 
 <img width="120" height="140" src="./assets/create_tool_llm.png"/>
 
-An example of LLM definition is that provided by the Alfred LLM
+An example of LLM definition is that provided by the Alfred's LLM
 
 <img width="420" height="530" src="./assets/llm_alfred.png"/>
 
-Here a shown a description, a prompt with the LLM model choose.
-This panel with the action button at bottom are visible selecting the llm from the flow elements.
+The following text provides a description and a prompt along with the selected LLM model.
 
-Following the tools defined for Alfred
+This panel, with the action button at the bottom, is visible when selecting the LLM from the flow elements.
+
+Following are the tools defined for Alfred
 
 <img width="418" height="810" src="./assets/tool_pantry_retrieval.png"/>
 
-In this example you can see a description, that define the instruction that will trigger this tool by the llm, a name used
- by the LLM to reference the function and a table with the fields that you want retrieve from the db.
+In this example, you can see a description that defines the instruction that will trigger this tool by the LLM, a name used
+by the LLM to reference the function and a table with the fields that you want to retrieve from the db.
 
-The second tool provided for Alfred is the one that create or update the item into the pantry, and is defined as follow
-
+The second tool provided for Alfred is the one that creates or updates the item in the pantry, and is defined as follows
 
 <img width="415" height="1193" src="./assets/tool_pantry_update.png"/>
 
-the difference in this casa is that you need to provide a json, defined in the field Parameters, that is the content of the parameters that OpenAI need 
-when you define a tools that needs information from the LLM (is quite described by the OpenAI in their guide, don't worry)
+The difference in this case is that you need to provide a JSON, defined in the field Parameters, that is the content of the parameters that OpenAI need when you define a tool that needs information from the LLM (is quite described by the OpenAI in their guide, don't worry)
 
 The GUI with a piece of conversation is shown in the following image
 
