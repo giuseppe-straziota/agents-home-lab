@@ -53,10 +53,14 @@ async function sendOpenAiMessage(message) {
             agent_info.systemPrompt = llm.llm_config.prompt;
             agent_info.model = llm.llm_config.model;
             conversationHistory.push({role: "system", content: agent_info.systemPrompt});
-            messageHistory.forEach((msg) => {
+            messageHistory.forEach((msg, index) => {
                     const message = JSON.parse(msg);
-                    delete message['timestamp'];
-                    conversationHistory.push(message)
+                    //Remove from the last messages sent as history the one that is a function_call_output
+                    // because it is the first one in the list, and there is no call_id that is related to it.
+                    if (!(index === 0 && message.type === "function_call_output")) {
+                        delete message['timestamp']; //used by the application but not present into type message defined by openai
+                        conversationHistory.push(message)
+                    }
                 }
             );
             tools = agent.tools.map(tool => {
@@ -79,7 +83,7 @@ async function sendOpenAiMessage(message) {
             console.error('Error retrieving agent info', error);
         }
 
-        //console.log("openai obj",{
+        // console.log("openai obj",{
         //     model: agent_info.model,
         //     input: conversationHistory,
         //     tools: tools,
